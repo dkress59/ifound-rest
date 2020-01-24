@@ -1,0 +1,27 @@
+{
+  "homepage": "http://ifoundone.20-20.biz/node-serve/",
+  "name": "serve",
+  "version": "1.0.0",
+  "description": "My first ALL-INKL nodejs http-serve test",
+  "main": "app.js",
+  "scripts": {
+    "serve": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node",
+    "serve",
+    "test"
+  ],
+  "author": "Damian Kress",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.8.9",
+    "morgan": "^1.9.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
