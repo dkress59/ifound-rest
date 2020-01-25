@@ -9,7 +9,7 @@ const multer = require('multer')
 
 const photoStorage = multer.diskStorage({
 	destination: function (req, file, cb) {
-		cb(null, __dirname + '/public/media/photos/')
+		cb(null, __dirname + '/../../public/media/photos/')
 	},
 	filename: function (req, file, cb) {
 		let fileName = new Date().toISOString().replace(/[^a-z0-9]/gi, '') + '.' + file.originalname
@@ -19,7 +19,7 @@ const photoStorage = multer.diskStorage({
 })
 const avatarStorage = multer.diskStorage({
 	destination: function (req, file, cb) {
-		cb(null, __dirname + '/public/media/avatars/')
+		cb(null, __dirname + '/../../public/media/avatars/')
 	},
 	filename: function (req, file, cb) {
 		let fileName = new Date().toISOString().replace(/[^a-z0-9]/gi, '') + '.' + file.originalname
