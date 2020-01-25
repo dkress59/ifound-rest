@@ -7,26 +7,8 @@ const router = express.Router()
 const mongoose = require('mongoose')
 const multer = require('multer')
 
-const photoStorage = multer.diskStorage({
-	destination: function (req, file, cb) {
-		cb(null, __dirname + '/../../public/media/photos/')
-	},
-	filename: function (req, file, cb) {
-		let fileName = new Date().toISOString().replace(/[^a-z0-9]/gi, '') + '.' + file.originalname
-		fileName.replace(/[^a-z0-9_-]/gi, '')
-		cb(null, fileName)
-	}
-})
-const avatarStorage = multer.diskStorage({
-	destination: function (req, file, cb) {
-		cb(null, __dirname + '/../../public/media/avatars/')
-	},
-	filename: function (req, file, cb) {
-		let fileName = new Date().toISOString().replace(/[^a-z0-9]/gi, '') + '.' + file.originalname
-		fileName.replace(/[^a-z0-9_-]/gi, '')
-		cb(null, fileName)
-	}
-})
+const http = require('http')
+
 const fileFilter = (req, file, cb) => {
 	if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
 		cb(null, true)
@@ -34,20 +16,42 @@ const fileFilter = (req, file, cb) => {
 		cb(null, false)
 	}
 }
-const photoUpload = multer({
-	storage: photoStorage,
+const upload = multer({
 	limits: {
 		fileSize: 1024 * 1024 * 2.5
 	},
 	fileFilter: fileFilter
 })
-const avatarUpload = multer({
-	storage: avatarStorage,
-	limits: {
-		fileSize: 1024 * 1024 * 2.5
-	},
-	fileFilter: fileFilter
-})
+const phpSendFile = (file, size, type, id, isAva) => {
+	/*const ava = (isAva)
+		? '&ava=true'
+		: ''*/
+	const options = {
+		hostname: "ifoundone.projecd.org",
+		port: 80,
+		path: "/upload.php?id=" + id + '&type=' + type + '&ava=' + Boolean(isAva),
+		method: 'POST',
+		headers: {
+			'Content-Type': 'image/jpeg',
+			'Content-Length': size
+		}
+	}
+	callback = function (response) {
+		var str = ''
+		response.on('data', function (chunk) {
+			str += chunk;
+		});
+
+		response.on('end', function () {
+			console.log(str);
+		});
+	}
+
+
+	var req = http.request(options, callback);
+	if (!req.write(file)) return false;
+	req.end();
+}
 
 const Photo = require('../models/photo')
 const Place = require('../models/place')
@@ -95,9 +99,9 @@ router.get('/', (req, res, next) => {
 		})
 })
 
-router.post('/', photoUpload.single('photoData'), (req, res, next) => {
-	console.log(req.file)
-	Place.findById(req.body.place)// !! KEY !! //
+router.post('/', upload.single('photoData'), (req, res, next) => {
+	console.log('MULTER FILE:', req.file)
+	Place.findById(req.body.place) // !! KEY !! //
 		.then(plc => {
 			if (plc) {
 				const photo = new Photo({
@@ -106,6 +110,7 @@ router.post('/', photoUpload.single('photoData'), (req, res, next) => {
 					url: 'http://localhost:5000/' + req.file.path,
 					place: req.body.place
 				})
+				phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, photo._id);
 				plc.photos.push(photo._id)
 				plc.save()
 				return photo.save()
@@ -179,14 +184,15 @@ router.get('/avatars', (req, res, next) => {
 		})
 })
 
-router.post('/avatars', avatarUpload.single('photoData'), (req, res, next) => {
-	console.log(req.file)
+router.post('/avatars', upload.single('photoData'), (req, res, next) => {
+	console.log('MULTER FILE:', req.file)
 	const avatar = new Photo({
 		_id: mongoose.Types.ObjectId(),
 		isAvatar: true,
 		url: 'http://localhost:5000/' + req.file.path,
 		place: req.body.place
 	})
+	phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, avatar._id, true);
 	avatar.save()
 		.then(result => {
 			console.log(result)
