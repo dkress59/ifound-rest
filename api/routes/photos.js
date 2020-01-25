@@ -34,7 +34,7 @@ const fileFilter = (req, file, cb) => {
 		cb(null, false)
 	}
 }
-const photoUpload = multer({
+/* const photoUpload = multer({
 	storage: photoStorage,
 	limits: {
 		fileSize: 1024 * 1024 * 2.5
@@ -47,7 +47,7 @@ const avatarUpload = multer({
 		fileSize: 1024 * 1024 * 2.5
 	},
 	fileFilter: fileFilter
-})
+}) */
 
 const Photo = require('../models/photo')
 const Place = require('../models/place')
@@ -95,7 +95,7 @@ router.get('/', (req, res, next) => {
 		})
 })
 
-router.post('/', photoUpload.single('photoData'), (req, res, next) => {
+router.post('/', /* photoUpload.single('photoData'), */ (req, res, next) => {
 	console.log(req.file)
 	Place.findById(req.body.place)// !! KEY !! //
 		.then(plc => {
@@ -179,7 +179,7 @@ router.get('/avatars', (req, res, next) => {
 		})
 })
 
-router.post('/avatars', avatarUpload.single('photoData'), (req, res, next) => {
+router.post('/avatars', /* avatarUpload.single('photoData'), */ (req, res, next) => {
 	console.log(req.file)
 	const avatar = new Photo({
 		_id: mongoose.Types.ObjectId(),
