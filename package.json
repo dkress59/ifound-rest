@@ -1,5 +1,4 @@
 {
-  //"homepage": "https://ifound-rest.heroku-app.com",
   "name": "serve",
   "version": "1.0.0",
   "description": "My first Heroku nodejs http-serve test",
