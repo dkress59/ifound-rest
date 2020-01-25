@@ -1,8 +1,8 @@
 {
-  "homepage": "http://ifoundone.20-20.biz/node-serve/",
+  //"homepage": "https://ifound-rest.heroku-app.com",
   "name": "serve",
   "version": "1.0.0",
-  "description": "My first ALL-INKL nodejs http-serve test",
+  "description": "My first Heroku nodejs http-serve test",
   "main": "app.js",
   "scripts": {
     "start": "nodemon server.js",
