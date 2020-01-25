@@ -1,7 +1,0 @@
-{
-	"env": {
-		"PORT" : 5000,
-		"MONGO_ATLAS_PW" : "qJn3iSvVjY6Obcdd",
-		"JWT_KEY": "f)6)t}Gqry§Mr4A>"
-	}
-}
