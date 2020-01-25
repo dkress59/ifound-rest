@@ -21,7 +21,7 @@ mongoose.connect(
 //mongoose.Promise = global.Promise
 
 app.use(morgan('dev'))
-app.use( '/media', express.static('media') )
+//app.use( '/media', express.static('media') )
 app.use(bodyParser.urlencoded({ extended: false }) )
 app.use(bodyParser.json())
 
@@ -40,13 +40,13 @@ app.use((req, res, next) => {
 })
 
 
-app.use('/places', placesRoutes)
-app.use('/photos', photosRoutes)
-app.use('/users', usersRoutes)
+app.use('/api/places', placesRoutes)
+app.use('/api/photos', photosRoutes)
+app.use('/api/users', usersRoutes)
 
-app.use('/', (req, res, next) => {
+app.use('/api/', (req, res, next) => {
 	res.status(200).json({
-		message: 'Either go to /places or to /photos'
+		message: 'Either go to /api/places or to /api/photos'
 	})
 })
 

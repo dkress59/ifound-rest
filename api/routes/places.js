@@ -19,7 +19,7 @@ router.get('/', (req, res, next) => {
 			console.log(places)
 			if (places.length > 0) {
 				const response = {
-					message: 'GET request to /places is good.',
+					message: 'GET request to /api/places is good.',
 					count: places.length,
 					places: places.map(plc => {
 						return {
@@ -32,7 +32,7 @@ router.get('/', (req, res, next) => {
 							lng: plc.lng,
 							request: {
 								type: 'GET',
-								url: 'http://localhost:5000/places/' + plc._id
+								url: 'http://ifoundone.projecd.org/api/places/' + plc._id
 							}
 						}
 					}),
@@ -66,7 +66,7 @@ router.post('/', (req, res, next) => {
 		.then(result => {
 			console.log(result)
 			res.status(201).json({
-				message: 'POST request to /places is good.',
+				message: 'POST request to /api/places is good.',
 				newPlace: {
 					_id: result._id,
 					name: result.name,
@@ -77,7 +77,7 @@ router.post('/', (req, res, next) => {
 					lng: result.lng,
 					request: {
 						type: 'GET',
-						url: 'http://localhost:5000/places/' + result._id
+						url: 'http://ifoundone.projecd.org/api/places/' + result._id
 					}
 				}
 			})
@@ -104,7 +104,7 @@ router.get('/:placeID', (req, res, next) => {
 					place: plc,
 					request: {
 						type: 'GET',
-						url: 'http://localhost:5000/places'
+						url: 'http://ifoundone.projecd.org/api/places'
 					}
 				})
 			} else {
@@ -138,11 +138,11 @@ router.patch('/:placeID', auth, (req, res, next) => {
 		.then(result => {
 			console.log(result)
 			res.status(200).json({
-				message: `PATCH request to /places/${id} is good.`,
+				message: `PATCH request to /api/places/${id} is good.`,
 				//updatedPlace: result,
 				request: {
 					type: 'GET',
-					url: `http://localhost:5000/places/${id}`
+					url: `http://ifoundone.projecd.org/api/places/${id}`
 				}
 			})
 		})
@@ -193,7 +193,7 @@ router.get('/:placeID/photos', (req, res, next) => {
 			console.log(photos)
 			if (photos.length > 0) {
 				const response = {
-					message: `GET request to /places/${id}/photos is good.`,
+					message: `GET request to /api/places/${id}/photos is good.`,
 					count: photos.length,
 					photos: photos.map(rslt => {
 						return {
@@ -202,7 +202,7 @@ router.get('/:placeID/photos', (req, res, next) => {
 							//place: rslt.place,
 							request: {
 								type: 'GET',
-								url: `http://localhost:5000/photos/${rslt._id}`
+								url: `http://ifoundone.projecd.org/api/photos/${rslt._id}`
 							}
 						}
 					})

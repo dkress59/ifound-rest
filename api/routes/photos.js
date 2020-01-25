@@ -70,7 +70,7 @@ router.get('/', (req, res, next) => {
 			console.log(photos)
 			if (photos.length > 0) {
 				const response = {
-					message: 'GET request to /photos is good.',
+					message: 'GET request to /api/photos is good.',
 					count: photos.length,
 					photos: photos.map(rslt => {
 						return {
@@ -79,7 +79,7 @@ router.get('/', (req, res, next) => {
 							place: rslt.place,
 							request: {
 								type: 'GET',
-								url: `http://localhost:5000/photos/${rslt._id}`
+								url: `http://ifoundone.projecd.org/api/photos/${rslt._id}`
 							}
 						}
 					})
@@ -104,10 +104,11 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 	Place.findById(req.body.place) // !! KEY !! //
 		.then(plc => {
 			if (plc) {
+				const uid = mongoose.Types.ObjectId()
 				const photo = new Photo({
-					_id: mongoose.Types.ObjectId(),
+					_id: uid,
 					isAvatar: false,
-					url: 'http://localhost:5000/' + req.file.path,
+					url: `http://ifoundone.projecd.org/view/${uid}.jpg`,
 					place: req.body.place
 				})
 				phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, photo._id);
@@ -123,7 +124,7 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 		.then(result => {
 			console.log(result)
 			res.status(201).json({
-				message: 'POST request to /photos is good.',
+				message: 'POST request to /api/photos is good.',
 				newPhoto: {
 					_id: result._id,
 					isAvatar: result.isAvatar,
@@ -131,7 +132,7 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 					url: result.url,
 					request: {
 						type: 'GET',
-						url: `http://localhost:5000/photos/${result._id}`
+						url: `http://ifoundone.projecd.org/api/photos/${result._id}`
 					}
 				}
 			})
@@ -155,7 +156,7 @@ router.get('/avatars', (req, res, next) => {
 			console.log(avatars)
 			if (avatars.length > 0) {
 				const response = {
-					message: 'GET request to /photos/avatars is good.',
+					message: 'GET request to /api/photos/avatars is good.',
 					count: avatars.length,
 					avatars: avatars.map(rslt => {
 						return {
@@ -164,7 +165,7 @@ router.get('/avatars', (req, res, next) => {
 							place: rslt.place,
 							request: {
 								type: 'GET',
-								url: `http://localhost:5000/photos/avatars/${rslt._id}`
+								url: `http://ifoundone.projecd.org/api/photos/avatars/${rslt._id}`
 							}
 						}
 					})
@@ -186,10 +187,11 @@ router.get('/avatars', (req, res, next) => {
 
 router.post('/avatars', upload.single('photoData'), (req, res, next) => {
 	console.log('MULTER FILE:', req.file)
+	const uid = mongoose.Types.ObjectId()
 	const avatar = new Photo({
-		_id: mongoose.Types.ObjectId(),
+		_id: uid,
 		isAvatar: true,
-		url: 'http://localhost:5000/' + req.file.path,
+		url: `http://ifoundone.projecd.org/view/users/${uid}.jpg`,
 		place: req.body.place
 	})
 	phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, avatar._id, true);
@@ -197,7 +199,7 @@ router.post('/avatars', upload.single('photoData'), (req, res, next) => {
 		.then(result => {
 			console.log(result)
 			res.status(201).json({
-				message: 'POST request to /photos/avatars is good.',
+				message: 'POST request to /api/photos/avatars is good.',
 				newAvatar: {
 					_id: result._id,
 					isAvatar: result.isAvatar,
@@ -205,7 +207,7 @@ router.post('/avatars', upload.single('photoData'), (req, res, next) => {
 					url: result.url,
 					request: {
 						type: 'GET',
-						url: `http://localhost:5000/photos/avatars/${result._id}`
+						url: `http://ifoundone.projecd.org/api/photos/avatars/${uid}`
 					}
 				}
 			})
@@ -233,7 +235,7 @@ router.get('/:photoID', (req, res, next) => {
 					photo: pic,
 					request: {
 						type: 'GET',
-						url: 'http://localhost:5000/photos'
+						url: 'http://ifoundone.projecd.org/api/photos'
 					}
 				})
 			} else {
@@ -295,7 +297,7 @@ router.get('/avatars/:avatarID', (req, res, next) => {
 					avatar: ava,
 					request: {
 						type: 'GET',
-						url: 'http://localhost:5000/photos/avatars'
+						url: 'http://ifoundone.projecd.org/api/photos/avatars'
 					}
 				})
 			} else {

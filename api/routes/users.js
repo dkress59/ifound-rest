@@ -33,7 +33,7 @@ router.post('/signup', (req, res, next) => {
 					.then(result => {
 						console.log(result)
 						res.status(201).json({
-							message: 'POST request to /signup is good.'
+							message: 'POST request to /api/signup is good.'
 						})
 					})
 					.catch(err => {
