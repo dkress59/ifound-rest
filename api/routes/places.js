@@ -7,6 +7,7 @@ const Place = require('../models/place')
 const mongoose = require('mongoose')
 
 const Photo = require('../models/photo')
+const auth = require('../auth/check')
 
 
 // ALL PLACES
@@ -122,7 +123,7 @@ router.get('/:placeID', (req, res, next) => {
 		})
 })
 
-router.patch('/:placeID', (req, res, next) => {
+router.patch('/:placeID', auth, (req, res, next) => {
 	const id = req.params.placeID
 	const updateOps = {}
 	for (const ops of req.body) {
@@ -153,7 +154,7 @@ router.patch('/:placeID', (req, res, next) => {
 		})
 })
 
-router.delete('/:placeID', (req, res, next) => {
+router.delete('/:placeID', auth, (req, res, next) => {
 	const id = req.params.placeID
 	Place.remove({
 			_id: id

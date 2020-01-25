@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 
 const placesRoutes = require('./api/routes/places')
 const photosRoutes = require('./api/routes/photos')
+const usersRoutes = require('./api/routes/users')
 
 
 mongoose.connect(
@@ -20,9 +21,8 @@ mongoose.connect(
 //mongoose.Promise = global.Promise
 
 app.use(morgan('dev'))
-app.use(bodyParser.urlencoded({
-	extended: false
-}))
+app.use( '/media', express.static('media') )
+app.use(bodyParser.urlencoded({ extended: false }) )
 app.use(bodyParser.json())
 
 
@@ -42,12 +42,13 @@ app.use((req, res, next) => {
 
 app.use('/places', placesRoutes)
 app.use('/photos', photosRoutes)
+app.use('/users', usersRoutes)
 
-/*app.use('/', (req, res, next) => {
+app.use('/', (req, res, next) => {
 	res.status(200).json({
 		message: 'Either go to /places or to /photos'
 	})
-})*/
+})
 
 app.use((req, res, next) => {
 	const err = new Error('Not found.')

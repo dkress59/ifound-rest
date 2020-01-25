@@ -3,9 +3,55 @@
 
 const express = require('express')
 const router = express.Router()
+
 const mongoose = require('mongoose')
+const multer = require('multer')
+
+const photoStorage = multer.diskStorage({
+	destination: function (req, file, cb) {
+		cb(null, './media/photos/')
+	},
+	filename: function (req, file, cb) {
+		let fileName = new Date().toISOString().replace(/[^a-z0-9]/gi, '') + '.' + file.originalname
+		fileName.replace(/[^a-z0-9_-]/gi, '')
+		cb(null, fileName)
+	}
+})
+const avatarStorage = multer.diskStorage({
+	destination: function (req, file, cb) {
+		cb(null, './media/avatars/')
+	},
+	filename: function (req, file, cb) {
+		let fileName = new Date().toISOString().replace(/[^a-z0-9]/gi, '') + '.' + file.originalname
+		fileName.replace(/[^a-z0-9_-]/gi, '')
+		cb(null, fileName)
+	}
+})
+const fileFilter = (req, file, cb) => {
+	if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+		cb(null, true)
+	} else {
+		cb(null, false)
+	}
+}
+const photoUpload = multer({
+	storage: photoStorage,
+	limits: {
+		fileSize: 1024 * 1024 * 2.5
+	},
+	fileFilter: fileFilter
+})
+const avatarUpload = multer({
+	storage: avatarStorage,
+	limits: {
+		fileSize: 1024 * 1024 * 2.5
+	},
+	fileFilter: fileFilter
+})
+
 const Photo = require('../models/photo')
 const Place = require('../models/place')
+const auth = require('../auth/check')
 
 
 // ALL PHOTOS
@@ -49,14 +95,15 @@ router.get('/', (req, res, next) => {
 		})
 })
 
-router.post('/', (req, res, next) => {
-	Place.findById(req.body.place)
+router.post('/', photoUpload.single('photoData'), (req, res, next) => {
+	console.log(req.file)
+	Place.findById(req.body.place)// !! KEY !! //
 		.then(plc => {
 			if (plc) {
 				const photo = new Photo({
 					_id: mongoose.Types.ObjectId(),
 					isAvatar: false,
-					url: req.body.url,
+					url: 'http://localhost:5000/' + req.file.path,
 					place: req.body.place
 				})
 				plc.photos.push(photo._id)
@@ -132,11 +179,12 @@ router.get('/avatars', (req, res, next) => {
 		})
 })
 
-router.post('/avatars', (req, res, next) => {
+router.post('/avatars', avatarUpload.single('photoData'), (req, res, next) => {
+	console.log(req.file)
 	const avatar = new Photo({
 		_id: mongoose.Types.ObjectId(),
 		isAvatar: true,
-		url: req.body.url,
+		url: 'http://localhost:5000/' + req.file.path,
 		place: req.body.place
 	})
 	avatar.save()
@@ -198,7 +246,7 @@ router.get('/:photoID', (req, res, next) => {
 		})
 })
 
-router.delete('/:photoID', (req, res, next) => {
+router.delete('/:photoID', auth, (req, res, next) => {
 	const id = req.params.photoID
 	Photo.remove({
 			_id: id
@@ -260,7 +308,8 @@ router.get('/avatars/:avatarID', (req, res, next) => {
 		})
 })
 
-router.delete('/avatars/:avatarID', (req, res, next) => {
+// !! also remove from Place !! //
+router.delete('/avatars/:avatarID', auth, (req, res, next) => {
 	const id = req.params.avatarID
 	Photo.remove({
 			_id: id
