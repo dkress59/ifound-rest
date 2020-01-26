@@ -143,7 +143,7 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 				})
 			})
 			.then(response => {
-				response.json()
+				return response.json()
 			})
 			.then((obj) => {
 				console.log('upload file with photoID:', obj)
