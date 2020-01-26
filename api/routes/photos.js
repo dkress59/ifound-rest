@@ -8,6 +8,7 @@ const mongoose = require('mongoose')
 const multer = require('multer')
 
 const http = require('http')
+const fetch = require('node-fetch')
 
 const fileFilter = (req, file, cb) => {
 	if (
