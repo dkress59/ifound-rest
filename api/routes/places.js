@@ -106,10 +106,10 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 					'Content-Type': 'application/json',
 					'Origin': 'http://ifound-rest.herokuapp.com',
 				},
-				body: JSON.stringify({
+				body: {
 					'place': result._id,
 					'photoData': req.body.photoData,
-				})
+				}
 			})
 		})
 		/* .then(res => {

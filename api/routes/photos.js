@@ -103,6 +103,7 @@ router.get('/', (req, res, next) => {
 
 router.post('/', upload.single('photoData'), (req, res, next) => {
 	console.log('MULTER FILE:', req.file)
+	console.log('PLACE ID:', req.body.place)
 	Place.findById(req.body.place) // !! KEY !! //
 		.then(plc => {
 			if (plc) {
