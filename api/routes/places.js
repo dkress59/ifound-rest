@@ -133,22 +133,24 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 				}
 			})
 			console.log('redirect file 999:', req.file)
-			fetch('https://ifound-rest.herokuapp.com/api/photos', {
-				method: 'post',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					'place': result._id
+			if (req.file && req.file.length > 0)
+				fetch('https://ifound-rest.herokuapp.com/api/photos', {
+					method: 'post',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						'place': result._id
+					})
 				})
-			})
-			.then(response => {
-				return response.json()
-			})
-			.then((obj) => {
-				console.log('upload file with photoID:', obj.newPhoto)
-				phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, obj.newPhoto._id)
-			})
+				.then(response => {
+					return response.json()
+				})
+				.then((obj) => {
+					console.log('upload file with photoID:', obj.newPhoto._id)
+					if (!phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, obj.newPhoto._id))
+						Photo.remove({ _id: obj.newPhoto._id })
+				})
 		})
 		.catch(err => {
 			console.error(err)
