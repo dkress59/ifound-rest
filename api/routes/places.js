@@ -9,6 +9,9 @@ const mongoose = require('mongoose')
 const Photo = require('../models/photo')
 const auth = require('../auth/check')
 
+const multer = require('multer')
+const upload = multer()
+
 
 // ALL PLACES
 router.get('/', (req, res, next) => {
@@ -52,7 +55,7 @@ router.get('/', (req, res, next) => {
 		})
 })
 
-router.post('/', (req, res, next) => {
+router.post('/', upload.single('photoData'), (req, res, next) => {
 	const plc = new Place({
 		_id: new mongoose.Types.ObjectId(),
 		name: req.body.name,
@@ -81,8 +84,20 @@ router.post('/', (req, res, next) => {
 					}
 				}
 			})
+			console.log('redirect file', result._id)
+			fetch('http://ifound-rest.herokuapp.com/api/photos', {
+				method: 'post',
+				headers: {
+					'Content-Type': 'application/json',
+					'Origin': 'http://ifound-rest.herokuapp.com',
+				},
+				body: JSON.stringify({
+					'place': result._id,
+					'photoData': req.file,
+				})
+			})
 		})
-		.then(res => {
+		/* .then(res => {
 			console.log('redirect file', res.newPlace._id)
 			fetch('http://ifound-rest.herokuapp.com/api/photos', {
 				method: 'post',
@@ -95,7 +110,7 @@ router.post('/', (req, res, next) => {
 					'photoData': res.file,
 				})
 			})
-		})
+		}) */
 		.catch(err => {
 			console.error(err)
 			res.status(500).json({
