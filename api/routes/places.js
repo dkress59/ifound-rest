@@ -133,7 +133,6 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 				}
 			})
 			console.log('redirect file 999:', req.file)
-			phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, result._id)// !! retreive ID from /place !! //
 			fetch('https://ifound-rest.herokuapp.com/api/photos', {
 				method: 'post',
 				headers: {
@@ -147,7 +146,8 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 				response.json()
 			})
 			.then(response => {
-				console.log('retreive _id from:', response.newPhoto)
+				console.log('upload file with photoID:', response._id)
+				phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, response._id)
 			})
 		})
 		.catch(err => {
