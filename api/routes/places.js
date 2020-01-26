@@ -11,6 +11,7 @@ const auth = require('../auth/check')
 
 const multer = require('multer')
 const upload = multer()
+const fetch = require('cross-fetch')//not polyfilled
 
 
 // ALL PLACES
@@ -84,7 +85,7 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 					}
 				}
 			})
-			console.log('redirect file', result._id)
+			console.log('redirect file', req.file.path)
 			fetch('http://ifound-rest.herokuapp.com/api/photos', {
 				method: 'post',
 				headers: {
