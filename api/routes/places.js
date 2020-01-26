@@ -142,8 +142,12 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 				body: JSON.stringify({
 					'place': result._id
 				})
-			}).then(response => {
-				console.log('retreive _id from:', response.json().newPhoto)
+			})
+			.then(response => {
+				response.json()
+			})
+			.then(response => {
+				console.log('retreive _id from:', response.newPhoto)
 			})
 		})
 		.catch(err => {
