@@ -3,9 +3,9 @@ const jwt = require('jsonwebtoken')
 module.exports = (req, res, next) => {
 	console.log('auth headers', req.headers)
 
-	if (req.headers.authorization !== undefined)
+	if (req.headers.Authorization !== undefined)
 		try {
-			const decoded = jwt.verify(req.headers.authorization.split(" ")[1], process.env.JWT_KEY)// verifies AND decodes
+			const decoded = jwt.verify(req.headers.Authorization.split(" ")[1], process.env.JWT_KEY)// verifies AND decodes
 			//req.userData = decoded// attaches userData to future requests
 			next()
 		} catch (err) {
