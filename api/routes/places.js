@@ -103,7 +103,7 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 			fetch('http://ifound-rest.herokuapp.com/api/photos', {
 				method: 'post',
 				headers: {
-					'Content-Type': 'application/json',
+					//'Content-Type': 'application/json',
 					'Origin': 'http://ifound-rest.herokuapp.com',
 				},
 				body: {
