@@ -26,6 +26,38 @@ const upload = multer({
 	fileFilter: fileFilter
 })
 const fetch = require('cross-fetch')//not polyfilled
+const phpSendFile = (file, size, type, id, isAva) => {
+	const path = (isAva === true)
+		? '/upload/user/'
+		: '/upload/'
+	const options = {
+		hostname: "ifoundone.projecd.org",
+		port: 80,
+		path: path + id + '&type=' + type,
+		method: 'POST',
+		headers: {
+			'Content-Type': 'image/jpeg',
+			'Content-Length': size
+		}
+	}
+	callback = function (response) {
+		var str = ''
+		response.on('data', function (chunk) {
+			str += chunk;
+		});
+
+		response.on('end', function () {
+			console.log(str);
+		});
+	}
+
+
+	var req = http.request(options, callback);
+	if (!req.write(file)) return false;
+	req.end();
+}
+const http = require('http')
+
 
 
 // ALL PLACES
@@ -99,18 +131,19 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 					}
 				}
 			})
-			console.log('redirect file', req.body.photoData)
+			console.log('redirect file 999:', req.file)
+			phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, result._id)
 			fetch('http://ifound-rest.herokuapp.com/api/photos', {
 				method: 'post',
 				headers: {
-					//'Content-Type': 'application/json',
+					'Content-Type': 'application/json',
 					//'Content-Type': 'multipart/form-data',
-					'Origin': 'http://ifound-rest.herokuapp.com',
+					//'Origin': 'http://ifound-rest.herokuapp.com',
 				},
-				body: {
+				body: JSON.stringify({
 					'place': result._id,
-					'photoData': req.body.photoData,
-				}
+					//'photoData': req.file,
+				})
 			})
 		})
 		/* .then(res => {

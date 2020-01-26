@@ -8,7 +8,7 @@ const mongoose = require('mongoose')
 const multer = require('multer')
 
 const http = require('http')
-const fetch = require('node-fetch')
+//const fetch = require('cross-fetch')
 
 const fileFilter = (req, file, cb) => {
 	if (
@@ -102,11 +102,10 @@ router.get('/', (req, res, next) => {
 		})
 })
 
-router.post('/', upload.single('photoData'), (req, res, next) => {
-	console.log('MULTER FILE:', req.file)
-	console.log('MULTER FILES:', req.files)
+router.post('/', (req, res, next) => {
 	console.log('PLACE ID:', req.body.place)
-	console.log('FILE FROM BODY ID:', req.body.photoData)
+	console.log('FILE FROM BODY:', req.body.photoData)
+	//console.log('params:', req.body.photoData.buffer)
 	Place.findById(req.body.place) // !! KEY !! //
 		.then(plc => {
 			if (plc) {
@@ -117,8 +116,9 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 					url: `http://ifoundone.projecd.org/view/${uid}`,
 					place: req.body.place
 				})
-				phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, uid);
-				plc.photos.push(photo._id)
+				//if (req.body.photoData.length > 0)
+					//phpSendFile(req.body.photoData.buffer, req.body.photoData.size, req.body.photoData.mimetype, uid);
+				plc.photos.push(uid)
 				plc.save()
 				return photo.save()
 			} else {
