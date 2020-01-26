@@ -132,7 +132,7 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 					}
 				}
 			})
-			console.log('redirect file 999:', req.file)
+			console.log('redirect file:', req.file.length)
 			if (req.file && req.file.length > 0)
 				fetch('https://ifound-rest.herokuapp.com/api/photos', {
 					method: 'post',
