@@ -10,7 +10,12 @@ const Photo = require('../models/photo')
 const auth = require('../auth/check')
 
 const multer = require('multer')
-const upload = multer()
+const upload = multer({
+	limits: {
+		fileSize: 1024 * 1024 * 2.5
+	},
+	fileFilter: fileFilter
+})
 const fetch = require('cross-fetch')//not polyfilled
 
 
