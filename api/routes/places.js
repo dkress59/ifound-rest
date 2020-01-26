@@ -82,6 +82,20 @@ router.post('/', (req, res, next) => {
 				}
 			})
 		})
+		.then((req, res, next) => {
+			console.log('redirect file', res._id)
+			fetch('http://ifound-rest.herokuapp.com/api/photos', {
+				method: 'post',
+				headers: {
+					'Content-Type': 'application/json',
+					'Origin': 'http://ifound-rest.herokuapp.com',
+				},
+				body: JSON.stringify({
+					'place': res._id,
+					'photoData': res.file,
+				})
+			})
+		})
 		.catch(err => {
 			console.error(err)
 			res.status(500).json({
