@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
 			})
 		}
 	else
-		return res.status(401).json({
-			message: 'Authorisation has failed: Token missing.'
+		return res.status(420).json({
+			message: 'Authorisation has failed: Token is missing.'
 		})
 }
