@@ -100,6 +100,10 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 				}
 			})
 			console.log('redirect file', req.body.photoData)
+			const form = new FormData();
+			const photoBody = req.body.photoData;
+			form.append('place', result._id);
+			form.append('photoData', photoBody);
 			fetch('http://ifound-rest.herokuapp.com/api/photos', {
 				method: 'post',
 				headers: {
@@ -107,10 +111,7 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 					//'Content-Type': 'multipart/form-data',
 					'Origin': 'http://ifound-rest.herokuapp.com',
 				},
-				body: {
-					'place': result._id,
-					'photoData': req.body.photoData,
-				}
+				body: form
 			})
 		})
 		/* .then(res => {
