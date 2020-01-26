@@ -6,10 +6,6 @@ const router = express.Router()
 
 const mongoose = require('mongoose')
 const multer = require('multer')
-
-const http = require('http')
-//const fetch = require('cross-fetch')
-
 const fileFilter = (req, file, cb) => {
 	if (
 		file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'
@@ -25,6 +21,9 @@ const upload = multer({
 	},
 	fileFilter: fileFilter
 })
+
+const http = require('http')
+//const fetch = require('cross-fetch')
 const phpSendFile = (file, size, type, id, isAva) => {
 	const path = (isAva === true)
 		? '/upload/user/'
@@ -82,7 +81,7 @@ router.get('/', (req, res, next) => {
 							place: rslt.place,
 							request: {
 								type: 'GET',
-								url: `http://ifoundone.projecd.org/api/photos/${rslt._id}`
+								url: `http://ifound-rest.herokuapp.com/api/photos/${rslt._id}`
 							}
 						}
 					})
@@ -138,7 +137,7 @@ router.post('/', (req, res, next) => {
 					url: result.url,
 					request: {
 						type: 'GET',
-						url: `http://ifoundone.projecd.org/api/photos/${result._id}`
+						url: `http://ifound-rest.herokuapp.com/api/photos/${result._id}`
 					}
 				}
 			})
@@ -171,7 +170,7 @@ router.get('/avatars', (req, res, next) => {
 							place: rslt.place,
 							request: {
 								type: 'GET',
-								url: `http://ifoundone.projecd.org/api/photos/avatars/${rslt._id}`
+								url: `http://ifound-rest.herokuapp.com/api/photos/avatars/${rslt._id}`
 							}
 						}
 					})
@@ -213,7 +212,7 @@ router.post('/avatars', upload.single('photoData'), (req, res, next) => {
 					url: result.url,
 					request: {
 						type: 'GET',
-						url: `http://ifoundone.projecd.org/api/photos/avatars/${uid}`
+						url: `http://ifound-rest.herokuapp.com/api/photos/avatars/${uid}`
 					}
 				}
 			})
@@ -241,7 +240,7 @@ router.get('/:photoID', (req, res, next) => {
 					photo: pic,
 					request: {
 						type: 'GET',
-						url: 'http://ifoundone.projecd.org/api/photos'
+						url: 'http://ifound-rest.herokuapp.com/api/photos'
 					}
 				})
 			} else {
@@ -271,15 +270,15 @@ router.delete('/:photoID', auth, (req, res, next) => {
 			res.status(200).json({
 				message: `Photo with _id ${id} successfully deleted.`,
 				_id: id,
-				/* request: {
+				request: {
 					type: 'POST',
-					url: 'http://localhost:500/photos',
+					url: 'http://ifound-rest.herokuapp.com/api/photos',
 					body: {
 						'url': 'String',
 						'isAvatar': 'Boolean (false)',
 						'place': 'objectID'
 					}
-				} */
+				}
 			})
 		})
 		.catch(err => {
@@ -334,15 +333,15 @@ router.delete('/avatars/:avatarID', auth, (req, res, next) => {
 			res.status(200).json({
 				message: `Avatar with _id ${id} successfully deleted.`,
 				_id: id,
-				/* request: {
+				request: {
 					type: 'POST',
-					url: 'http://localhost:500/photos/avatars',
+					url: 'http://ifound-rest.herokuapp.com/api/photos/avatars',
 					body: {
 						'url': 'String',
 						'isAvatar': 'Boolean (true)',
 						'place': 'objectID'
 					}
-				} */
+				}
 			})
 		})
 		.catch(err => {

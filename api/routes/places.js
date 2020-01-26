@@ -25,7 +25,8 @@ const upload = multer({
 	},
 	fileFilter: fileFilter
 })
-const fetch = require('cross-fetch')//not polyfilled
+
+const http = require('http')
 const phpSendFile = (file, size, type, id, isAva) => {
 	const path = (isAva === true)
 		? '/upload/user/'
@@ -56,7 +57,7 @@ const phpSendFile = (file, size, type, id, isAva) => {
 	if (!req.write(file)) return false;
 	req.end();
 }
-const http = require('http')
+const fetch = require('cross-fetch')//not polyfilled
 
 
 
@@ -82,7 +83,7 @@ router.get('/', (req, res, next) => {
 							lng: plc.lng,
 							request: {
 								type: 'GET',
-								url: 'http://ifoundone.projecd.org/api/places/' + plc._id
+								url: 'http://ifound-rest.herokuapp.com/api/places/' + plc._id
 							}
 						}
 					}),
@@ -127,39 +128,22 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 					lng: result.lng,
 					request: {
 						type: 'GET',
-						url: 'http://ifoundone.projecd.org/api/places/' + result._id
+						url: 'http://ifound-rest.herokuapp.com/api/places/' + result._id
 					}
 				}
 			})
 			console.log('redirect file 999:', req.file)
 			phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, result._id)
-			fetch('http://ifound-rest.herokuapp.com/api/photos', {
+			fetch('https://ifound-rest.herokuapp.com/api/photos', {
 				method: 'post',
 				headers: {
 					'Content-Type': 'application/json',
-					//'Content-Type': 'multipart/form-data',
-					//'Origin': 'http://ifound-rest.herokuapp.com',
 				},
 				body: JSON.stringify({
-					'place': result._id,
-					//'photoData': req.file,
+					'place': result._id
 				})
 			})
 		})
-		/* .then(res => {
-			console.log('redirect file', res.newPlace._id)
-			fetch('http://ifound-rest.herokuapp.com/api/photos', {
-				method: 'post',
-				headers: {
-					'Content-Type': 'application/json',
-					'Origin': 'http://ifound-rest.herokuapp.com',
-				},
-				body: JSON.stringify({
-					'place': res.newPlace._id,
-					'photoData': res.file,
-				})
-			})
-		}) */
 		.catch(err => {
 			console.error(err)
 			res.status(500).json({
@@ -220,7 +204,7 @@ router.patch('/:placeID', auth, (req, res, next) => {
 				//updatedPlace: result,
 				request: {
 					type: 'GET',
-					url: `http://ifoundone.projecd.org/api/places/${id}`
+					url: `http://ifound-rest.herokuapp.com/api/places/${id}`
 				}
 			})
 		})
@@ -245,7 +229,7 @@ router.delete('/:placeID', auth, (req, res, next) => {
 				_id: id,
 				/* request: {
 					type: 'POST',
-					url: 'http://localhost:500/places',
+					url: 'http://ifound-rest.herokuapp.com/api/places',
 					body: {
 						'author': 'String',
 						'lat': 'Number',
@@ -280,7 +264,7 @@ router.get('/:placeID/photos', (req, res, next) => {
 							//place: rslt.place,
 							request: {
 								type: 'GET',
-								url: `http://ifoundone.projecd.org/api/photos/${rslt._id}`
+								url: `http://ifound-rest.herokuapp.com/api/photos/${rslt._id}`
 							}
 						}
 					})
