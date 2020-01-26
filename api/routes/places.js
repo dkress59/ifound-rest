@@ -83,7 +83,7 @@ router.post('/', (req, res, next) => {
 			})
 		})
 		.then((req, res, next) => {
-			console.log('redirect file', res._id)
+			console.log('redirect file', res.newPlace._id)
 			fetch('http://ifound-rest.herokuapp.com/api/photos', {
 				method: 'post',
 				headers: {
@@ -91,8 +91,8 @@ router.post('/', (req, res, next) => {
 					'Origin': 'http://ifound-rest.herokuapp.com',
 				},
 				body: JSON.stringify({
-					'place': res._id,
-					'photoData': res.file,
+					'place': res.newPlace._id,
+					'photoData': res.newPlace.file,
 				})
 			})
 		})
