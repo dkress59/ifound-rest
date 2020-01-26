@@ -10,7 +10,9 @@ const multer = require('multer')
 const http = require('http')
 
 const fileFilter = (req, file, cb) => {
-	if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+	if (
+		file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'
+		) {
 		cb(null, true)
 	} else {
 		cb(null, false)
@@ -23,13 +25,13 @@ const upload = multer({
 	fileFilter: fileFilter
 })
 const phpSendFile = (file, size, type, id, isAva) => {
-	/*const ava = (isAva)
-		? '&ava=true'
-		: ''*/
+	const path = (isAva === true)
+		? '/upload/user/'
+		: '/upload/'
 	const options = {
 		hostname: "ifoundone.projecd.org",
 		port: 80,
-		path: "/upload.php?id=" + id + '&type=' + type + '&ava=' + Boolean(isAva),
+		path: path + id + '&type=' + type,
 		method: 'POST',
 		headers: {
 			'Content-Type': 'image/jpeg',
@@ -108,10 +110,10 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 				const photo = new Photo({
 					_id: uid,
 					isAvatar: false,
-					url: `http://ifoundone.projecd.org/view/${uid}.jpg`,
+					url: `http://ifoundone.projecd.org/view/${uid}`,
 					place: req.body.place
 				})
-				phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, photo._id);
+				phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, uid);
 				plc.photos.push(photo._id)
 				plc.save()
 				return photo.save()
@@ -191,7 +193,7 @@ router.post('/avatars', upload.single('photoData'), (req, res, next) => {
 	const avatar = new Photo({
 		_id: uid,
 		isAvatar: true,
-		url: `http://ifoundone.projecd.org/view/users/${uid}.jpg`,
+		url: `http://ifoundone.projecd.org/view/users/${uid}`,
 		place: req.body.place
 	})
 	phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, avatar._id, true);

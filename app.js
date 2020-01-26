@@ -3,6 +3,7 @@ const app = express()
 const morgan = require('morgan')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
+//const cors = require('cors')
 
 const placesRoutes = require('./api/routes/places')
 const photosRoutes = require('./api/routes/photos')
@@ -13,17 +14,10 @@ mongoose.connect(
 	'mongodb+srv://atlastest:' +
 	process.env.MONGO_ATLAS_PW +
 	'@cluster0-guz2q.mongodb.net/iFound-one?retryWrites=true&w=majority', {
-		//useMongoClient: true,
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	}
 )
-//mongoose.Promise = global.Promise
-
-app.use(morgan('dev'))
-//app.use( '/media', express.static('media') )
-app.use(bodyParser.urlencoded({ extended: false }) )
-app.use(bodyParser.json())
 
 
 app.use((req, res, next) => {
@@ -38,6 +32,10 @@ app.use((req, res, next) => {
 	}
 	next()
 })
+//app.use(cors())
+app.use(morgan('dev'))
+app.use(bodyParser.urlencoded({ extended: false }) )
+app.use(bodyParser.json())
 
 
 app.use('/api/places', placesRoutes)

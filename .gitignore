@@ -2,3 +2,5 @@ node_modules
 media
 .env
 nodemon.json
+.DS_Store
+.code-workspace
