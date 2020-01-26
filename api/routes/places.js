@@ -85,7 +85,7 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 					}
 				}
 			})
-			console.log('redirect file', req.file.path)
+			console.log('redirect file', req.file)
 			fetch('http://ifound-rest.herokuapp.com/api/photos', {
 				method: 'post',
 				headers: {
