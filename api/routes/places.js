@@ -104,6 +104,7 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 				method: 'post',
 				headers: {
 					//'Content-Type': 'application/json',
+					//'Content-Type': 'multipart/form-data',
 					'Origin': 'http://ifound-rest.herokuapp.com',
 				},
 				body: {
