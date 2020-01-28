@@ -246,7 +246,7 @@ router.delete('/:placeID', auth, (req, res, next) => {
 				for (let photo of result[0].photos) {
 					Photo.deleteOne({ _id: photo })
 						.exec()
-					fetch('https://ifoundone.projecd.org/delete/44'+photo)
+					fetch('https://ifoundone.projecd.org/delete/'+photo)
 						//.then(php => { if (php.status !== '204') console.error('Error: ', php) })// ?? //
 				}
 		})
