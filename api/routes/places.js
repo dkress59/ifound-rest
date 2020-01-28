@@ -27,7 +27,10 @@ const upload = multer({
 })
 
 const http = require('http')
-const phpSendFile = (file, size, type, id, isAva) => {
+const phpSendFile = (file, size, type, id, isAva, handle) => {
+	const handleResponse = (!handle && typeof isAva === 'function')
+		? isAva
+		: handle
 	const path = (isAva === true)
 		? '/upload/user/'
 		: '/upload/'
@@ -37,7 +40,7 @@ const phpSendFile = (file, size, type, id, isAva) => {
 		path: path + id + '&type=' + type,
 		method: 'POST',
 		headers: {
-			'Content-Type': 'image/jpeg',
+			'Content-Type': type,
 			'Content-Length': size
 		}
 	}
@@ -48,14 +51,17 @@ const phpSendFile = (file, size, type, id, isAva) => {
 		});
 
 		response.on('end', function () {
-			console.log(str);
+			if (handleResponse)
+				handleResponse(JSON.parse(str))
+			else
+				console.log('phpSendFile response:', JSON.parse(str))
 		});
 	}
 
 
 	var req = http.request(options, callback);
-	if (!req.write(file)) return false;
-	req.end();
+	req.write(file)
+	req.end()
 }
 const fetch = require('cross-fetch')//not polyfilled
 
@@ -146,9 +152,18 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 					return response.json()
 				})
 				.then((obj) => {
-					console.log('upload file with photoID:', obj.newPhoto._id)
-					if (!phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, obj.newPhoto._id))
-						Photo.remove({ _id: obj.newPhoto._id })
+					console.log('File upload…')
+					const uploadSuccess = (phpRresponse) => {
+						if (phpRresponse.status === 500){
+							console.log('…failed!')
+							console.error('Upload Error:', phpRresponse)
+							Photo.deleteOne({ _id: obj.newPhoto._id })
+							return false
+						}
+						else
+							console.log('…is good.')
+					}
+					phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, obj.newPhoto._id, uploadSuccess)
 				})
 		})
 		.catch(err => {
@@ -163,8 +178,6 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 router.get('/:placeID', (req, res, next) => {
 	const id = req.params.placeID
 	Place.findById(id)
-		//.populate('avatar')//?
-		//.populate({ path: 'photos', select: 'url' })//!
 		.exec()
 		.then(plc => {
 			console.log(plc)
@@ -225,7 +238,19 @@ router.patch('/:placeID', auth, (req, res, next) => {
 
 router.delete('/:placeID', auth, (req, res, next) => {
 	const id = req.params.placeID
-	Place.remove({
+	Place.find({ _id: id })
+		.select('photos')
+		.exec()
+		.then(result => {
+			if (result.length > 0 && result[0].photos.length > 0)
+				for (let photo of result[0].photos) {
+					Photo.deleteOne({ _id: photo })
+						.exec()
+					fetch('https://ifoundone.projecd.org/delete/44'+photo)
+						//.then(php => { if (php.status !== '204') console.error('Error: ', php) })// ?? //
+				}
+		})
+	Place.deleteOne({
 			_id: id
 		})
 		.exec()
@@ -234,15 +259,16 @@ router.delete('/:placeID', auth, (req, res, next) => {
 			res.status(200).json({
 				message: `Place with _id ${id} successfully deleted.`,
 				_id: id,
-				/* request: {
+				request: {
 					type: 'POST',
 					url: 'http://ifound-rest.herokuapp.com/api/places',
 					body: {
+						'name': 'String',
 						'author': 'String',
 						'lat': 'Number',
 						'lng': 'Number'
 					}
-				} */
+				}
 			})
 		})
 		.catch(err => {
