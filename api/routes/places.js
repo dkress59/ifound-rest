@@ -114,10 +114,12 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 		_id: new mongoose.Types.ObjectId(),
 		name: req.body.name,
 		author: req.body.author,
-		photos: req.body.photos,
 		avatar: req.body.avatar,
 		lat: req.body.lat,
-		lng: req.body.lng
+		lng: req.body.lng,
+		photos: req.body.photos,
+		created: req.get('Date'),
+		ip: req.ip || req.connection.remoteAddress
 	})
 	plc.save()
 		.then(result => {
