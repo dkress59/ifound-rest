@@ -109,7 +109,10 @@ router.get('/', (req, res, next) => {
 		})
 })
 
-router.post('/', upload.single('photoData'), (req, res, next) => {
+router.post('/', upload.fields([
+	{ name: 'photoData', maxCount: 1 },
+	{ name: 'cameraData', maxCount: 1 }
+  ]), (req, res, next) => {
 	const plc = new Place({
 		_id: new mongoose.Types.ObjectId(),
 		name: req.body.name,
@@ -124,6 +127,10 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 	plc.save()
 		.then(result => {
 			console.log(result)
+			console.log('FILES', req.files)
+			const incoming = (req.files.photoData)
+				? req.files.photoData[0]
+				: req.files.cameraData[0]
 			res.status(201).json({
 				message: 'POST request to /api/places is good.',
 				newPlace: {
@@ -140,7 +147,7 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 					}
 				}
 			})
-			if (req.file && req.file !== undefined)
+			if (incoming && incoming !== undefined)
 				fetch('https://ifound-rest.herokuapp.com/api/photos', {
 					method: 'post',
 					headers: {
@@ -165,7 +172,7 @@ router.post('/', upload.single('photoData'), (req, res, next) => {
 						else
 							console.log('…is good.')
 					}
-					phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, obj.newPhoto._id, uploadSuccess)
+					phpSendFile(incoming.buffer, incoming.size, incoming.mimetype, obj.newPhoto._id, uploadSuccess)
 				})
 		})
 		.catch(err => {

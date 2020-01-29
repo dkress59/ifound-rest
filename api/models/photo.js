@@ -8,6 +8,8 @@ const photoSchema = new Schema({
 	place: { type: mongoose.Schema.Types.ObjectId, ref: 'Place', required: true },
 	//author: String,
 	//user: mongoose.Schema.Types.ObjectId,
+	exif: { type: Object },
+	gps: { type: Object }
 });
 
 module.exports = mongoose.model('Photo', photoSchema);
