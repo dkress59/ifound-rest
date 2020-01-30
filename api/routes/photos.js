@@ -102,9 +102,6 @@ router.get('/', (req, res, next) => {
 })
 
 router.post('/', (req, res, next) => {
-	console.log('PLACE ID:', req.body.place)
-	console.log('FILE FROM BODY:', req.body.photoData)
-	//console.log('params:', req.body.photoData.buffer)
 	Place.findById(req.body.place) // !! KEY !! //
 		.then(plc => {
 			if (plc) {
@@ -113,10 +110,12 @@ router.post('/', (req, res, next) => {
 					_id: uid,
 					isAvatar: false,
 					url: `http://ifoundone.projecd.org/view/${uid}`,
-					place: req.body.place
+					place: req.body.place,
+					//gps: req.body.gps,
+					//exif: req.body.exif,
 				})
-				//if (req.body.photoData.length > 0)
-					//phpSendFile(req.body.photoData.buffer, req.body.photoData.size, req.body.photoData.mimetype, uid);
+				//photo.exif.set(req.body.exif)// !!
+				//photo.gps.set(req.body.gps)// !!
 				plc.photos.push(uid)
 				plc.save()
 				return photo.save()

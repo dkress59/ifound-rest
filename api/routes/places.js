@@ -11,9 +11,7 @@ const auth = require('../auth/check')
 
 const multer = require('multer')
 const fileFilter = (req, file, cb) => {
-	if (
-		file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'
-		) {
+	if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/pjpeg') {
 		cb(null, true)
 	} else {
 		cb(null, false)
@@ -28,9 +26,11 @@ const upload = multer({
 
 const http = require('http')
 const phpSendFile = (file, size, type, id, isAva, handle) => {
+
 	const handleResponse = (!handle && typeof isAva === 'function')
 		? isAva
 		: handle
+	
 	const path = (isAva === true)
 		? '/upload/user/'
 		: '/upload/'
@@ -64,6 +64,8 @@ const phpSendFile = (file, size, type, id, isAva, handle) => {
 	req.end()
 }
 const fetch = require('cross-fetch')//not polyfilled
+
+const ExifImage = require('exif').ExifImage
 
 
 
@@ -112,7 +114,7 @@ router.get('/', (req, res, next) => {
 router.post('/', upload.fields([
 	{ name: 'photoData', maxCount: 1 },
 	{ name: 'cameraData', maxCount: 1 }
-  ]), (req, res, next) => {
+]), (req, res, next) => {
 	const plc = new Place({
 		_id: new mongoose.Types.ObjectId(),
 		name: req.body.name,
@@ -122,7 +124,7 @@ router.post('/', upload.fields([
 		lng: req.body.lng,
 		photos: req.body.photos,
 		created: req.get('Date'),
-		ip: req.ip || req.connection.remoteAddress
+		ip: req.ip || req.connection.remoteAddress,
 	})
 	plc.save()
 		.then(result => {
@@ -131,48 +133,57 @@ router.post('/', upload.fields([
 			const incoming = (req.files.photoData)
 				? req.files.photoData[0]
 				: req.files.cameraData[0]
-			res.status(201).json({
-				message: 'POST request to /api/places is good.',
-				newPlace: {
-					_id: result._id,
-					name: result.name,
-					author: result.author,
-					photos: result.photos,
-					avatar: result.avatar,
-					lat: result.lat,
-					lng: result.lng,
-					request: {
-						type: 'GET',
-						url: 'http://ifound-rest.herokuapp.com/api/places/' + result._id
-					}
-				}
-			})
 			if (incoming && incoming !== undefined)
-				fetch('https://ifound-rest.herokuapp.com/api/photos', {
-					method: 'post',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({
-						'place': result._id
+				new ExifImage({ image: incoming.buffer}, (error, exifData) => {
+					console.log('exif', exifData.exif, exifData.gps)
+					fetch('https://ifound-rest.herokuapp.com/api/photos', {
+						method: 'post',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							place: result._id,
+							exif: exifData.exif,
+							gps: exifData.gps,
+						})
 					})
-				})
-				.then(response => {
-					return response.json()
-				})
-				.then((obj) => {
-					console.log('File upload…')
-					const uploadSuccess = (phpRresponse) => {
-						if (phpRresponse.status === 500){
-							console.log('…failed!')
-							console.error('Upload Error:', phpRresponse)
-							Photo.deleteOne({ _id: obj.newPhoto._id })
-							return false
-						}
-						else
-							console.log('…is good.')
-					}
-					phpSendFile(incoming.buffer, incoming.size, incoming.mimetype, obj.newPhoto._id, uploadSuccess)
+						.then(response => {
+							return response.json()
+						})
+						.then((obj) => {
+							console.log('File upload…')
+							const uploadSuccess = (phpRresponse) => {
+								console.log('php', phpRresponse)
+								if (phpRresponse.status === 500) {
+									console.log('…failed!')
+									console.error('Upload Error:', phpRresponse)
+									Photo.deleteOne({ _id: obj.newPhoto._id })
+									res.status(500).json({ error: phpRresponse })
+									//return false
+								}
+								else
+									console.log('…is good.')
+								res.status(201).json({
+									message: 'POST request to /api/places is good.',
+									newPlace: {
+										_id: result._id,
+										name: result.name,
+										author: result.author,
+										photos: result.photos,
+										avatar: result.avatar,
+										lat: result.lat,
+										lng: result.lng,
+										gps: incoming.gps,
+										request: {
+											type: 'GET',
+											url: 'http://ifound-rest.herokuapp.com/api/places/' + result._id
+										}
+									},
+									php: phpRresponse
+								})
+							}
+							phpSendFile(incoming.buffer, incoming.size, incoming.mimetype, obj.newPhoto._id, uploadSuccess)
+						})
 				})
 		})
 		.catch(err => {
@@ -221,10 +232,10 @@ router.patch('/:placeID', auth, (req, res, next) => {
 		updateOps[ops.propName] = ops.value
 	}
 	Place.update({
-			_id: id
-		}, {
-			$set: updateOps
-		})
+		_id: id
+	}, {
+		$set: updateOps
+	})
 		.exec()
 		.then(result => {
 			console.log(result)
@@ -255,13 +266,13 @@ router.delete('/:placeID', auth, (req, res, next) => {
 				for (let photo of result[0].photos) {
 					Photo.deleteOne({ _id: photo })
 						.exec()
-					fetch('https://ifoundone.projecd.org/delete/'+photo)
-						//.then(php => { if (php.status !== '204') console.error('Error: ', php) })// ?? //
+					fetch('https://ifoundone.projecd.org/delete/' + photo)
+					//.then(php => { if (php.status !== '204') console.error('Error: ', php) })// ?? //
 				}
 		})
 	Place.deleteOne({
-			_id: id
-		})
+		_id: id
+	})
 		.exec()
 		.then(result => {
 			console.log(result)
