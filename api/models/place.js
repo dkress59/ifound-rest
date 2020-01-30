@@ -8,6 +8,7 @@ const placeSchema = new Schema({
 	avatar: mongoose.Schema.Types.ObjectId,
 	lat: { type: Number, required: true },
 	lng: { type: Number, required: true },
+	range: Number,
 	photos: Array,
 	created: { type: mongoose.Schema.Types.Date, default: Date.now },
 	ip: String

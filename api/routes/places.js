@@ -73,7 +73,7 @@ const ExifImage = exif.ExifImage
 // ALL PLACES
 router.get('/', (req, res, next) => {
 	Place.find()
-		.select('name author avatar photos lat lng')
+		.select('name author avatar photos lat lng range')
 		.exec()
 		.then(places => {
 			console.log(places)
@@ -90,6 +90,7 @@ router.get('/', (req, res, next) => {
 							photos: plc.photos,
 							lat: plc.lat,
 							lng: plc.lng,
+							range: plc.range,
 							request: {
 								type: 'GET',
 								url: process.env.REST_URL + '/api/places/' + plc._id
@@ -123,6 +124,7 @@ router.post('/', upload.fields([
 		avatar: req.body.avatar,
 		lat: req.body.lat,
 		lng: req.body.lng,
+		range: req.body.range,
 		photos: req.body.photos,
 		created: req.get('Date'),
 		ip: req.ip || req.connection.remoteAddress,
@@ -133,7 +135,7 @@ router.post('/', upload.fields([
 			const incoming = (req.files.photoData)
 				? req.files.photoData[0]
 				: (req.files.cameraData) ? req.files.cameraData[0] : null
-			if (incoming && incoming !== undefined)
+			if (incoming && incoming !== null)
 				new ExifImage({ image: incoming.buffer }, (error, exifData) => {
 					fetch(process.env.REST_URL + '/api/photos', {
 						method: 'post',
@@ -172,6 +174,7 @@ router.post('/', upload.fields([
 											avatar: result.avatar,
 											lat: result.lat,
 											lng: result.lng,
+											range: result.range,
 											gps: incoming.gps,
 											request: {
 												type: 'GET',
@@ -185,6 +188,25 @@ router.post('/', upload.fields([
 							phpSendFile(incoming.buffer, incoming.size, incoming.mimetype, obj.newPhoto._id, uploadSuccess)
 						})
 				})
+			else
+				return res.status(201).json({
+					message: 'POST request to /api/places is good.',
+					newPlace: {
+						_id: result._id,
+						name: result.name,
+						author: result.author,
+						photos: result.photos,
+						avatar: result.avatar,
+						lat: result.lat,
+						lng: result.lng,
+						range: result.range,
+						request: {
+							type: 'GET',
+							url: process.env.REST_URL + '/api/places/' + result._id
+						}
+					}
+				})
+
 		})
 		.catch(err => {
 			console.error(err)
