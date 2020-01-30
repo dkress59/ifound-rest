@@ -1,7 +1,7 @@
 {
   "name": "serve",
-  "version": "1.0.1",
-  "description": "My first Heroku nodejs http-serve test",
+  "version": "1.0.2",
+  "description": "iFound.one REST API server",
   "main": "app.js",
   "scripts": {
     "start": "node server.js",

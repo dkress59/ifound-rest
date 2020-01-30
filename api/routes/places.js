@@ -30,7 +30,7 @@ const phpSendFile = (file, size, type, id, isAva, handle) => {
 	const handleResponse = (!handle && typeof isAva === 'function')
 		? isAva
 		: handle
-	
+
 	const path = (isAva === true)
 		? '/upload/user/'
 		: '/upload/'
@@ -65,7 +65,8 @@ const phpSendFile = (file, size, type, id, isAva, handle) => {
 }
 const fetch = require('cross-fetch')//not polyfilled
 
-const ExifImage = require('exif').ExifImage
+const exif = require('exif')
+const ExifImage = exif.ExifImage
 
 
 
@@ -91,7 +92,7 @@ router.get('/', (req, res, next) => {
 							lng: plc.lng,
 							request: {
 								type: 'GET',
-								url: 'http://ifound-rest.herokuapp.com/api/places/' + plc._id
+								url: process.env.REST_URL + '/api/places/' + plc._id
 							}
 						}
 					}),
@@ -129,14 +130,12 @@ router.post('/', upload.fields([
 	plc.save()
 		.then(result => {
 			console.log(result)
-			console.log('FILES', req.files)
 			const incoming = (req.files.photoData)
 				? req.files.photoData[0]
-				: req.files.cameraData[0]
+				: (req.files.cameraData) ? req.files.cameraData[0] : null
 			if (incoming && incoming !== undefined)
-				new ExifImage({ image: incoming.buffer}, (error, exifData) => {
-					console.log('exif', exifData.exif, exifData.gps)
-					fetch('https://ifound-rest.herokuapp.com/api/photos', {
+				new ExifImage({ image: incoming.buffer }, (error, exifData) => {
+					fetch(process.env.REST_URL + '/api/photos', {
 						method: 'post',
 						headers: {
 							'Content-Type': 'application/json',
@@ -144,7 +143,7 @@ router.post('/', upload.fields([
 						body: JSON.stringify({
 							place: result._id,
 							exif: exifData.exif,
-							gps: exifData.gps,
+							gps: exifData.gps
 						})
 					})
 						.then(response => {
@@ -158,29 +157,30 @@ router.post('/', upload.fields([
 									console.log('…failed!')
 									console.error('Upload Error:', phpRresponse)
 									Photo.deleteOne({ _id: obj.newPhoto._id })
-									res.status(500).json({ error: phpRresponse })
+									return res.status(500).json({ error: phpRresponse })
 									//return false
 								}
-								else
+								else {
 									console.log('…is good.')
-								res.status(201).json({
-									message: 'POST request to /api/places is good.',
-									newPlace: {
-										_id: result._id,
-										name: result.name,
-										author: result.author,
-										photos: result.photos,
-										avatar: result.avatar,
-										lat: result.lat,
-										lng: result.lng,
-										gps: incoming.gps,
-										request: {
-											type: 'GET',
-											url: 'http://ifound-rest.herokuapp.com/api/places/' + result._id
-										}
-									},
-									php: phpRresponse
-								})
+									return res.status(201).json({
+										message: 'POST request to /api/places is good.',
+										newPlace: {
+											_id: result._id,
+											name: result.name,
+											author: result.author,
+											photos: result.photos,
+											avatar: result.avatar,
+											lat: result.lat,
+											lng: result.lng,
+											gps: incoming.gps,
+											request: {
+												type: 'GET',
+												url: process.env.REST_URL + '/api/places/' + result._id
+											}
+										},
+										php: phpRresponse
+									})
+								}
 							}
 							phpSendFile(incoming.buffer, incoming.size, incoming.mimetype, obj.newPhoto._id, uploadSuccess)
 						})
@@ -244,7 +244,7 @@ router.patch('/:placeID', auth, (req, res, next) => {
 				//updatedPlace: result,
 				request: {
 					type: 'GET',
-					url: `http://ifound-rest.herokuapp.com/api/places/${id}`
+					url: process.env.REST_URL + `/api/places/${id}`
 				}
 			})
 		})
@@ -281,7 +281,7 @@ router.delete('/:placeID', auth, (req, res, next) => {
 				_id: id,
 				request: {
 					type: 'POST',
-					url: 'http://ifound-rest.herokuapp.com/api/places',
+					url: process.env.REST_URL + '/api/places',
 					body: {
 						'name': 'String',
 						'author': 'String',
@@ -317,7 +317,7 @@ router.get('/:placeID/photos', (req, res, next) => {
 							//place: rslt.place,
 							request: {
 								type: 'GET',
-								url: `http://ifound-rest.herokuapp.com/api/photos/${rslt._id}`
+								url: process.env.REST_URL + `/api/photos/${rslt._id}`
 							}
 						}
 					})

@@ -81,7 +81,7 @@ router.get('/', (req, res, next) => {
 							place: rslt.place,
 							request: {
 								type: 'GET',
-								url: `http://ifound-rest.herokuapp.com/api/photos/${rslt._id}`
+								url: process.env.REST_URL + `/api/photos/${rslt._id}`
 							}
 						}
 					})
@@ -104,6 +104,7 @@ router.get('/', (req, res, next) => {
 router.post('/', (req, res, next) => {
 	Place.findById(req.body.place) // !! KEY !! //
 		.then(plc => {
+			console.log('req', req.body)
 			if (plc) {
 				const uid = mongoose.Types.ObjectId()
 				const photo = new Photo({
@@ -111,11 +112,9 @@ router.post('/', (req, res, next) => {
 					isAvatar: false,
 					url: `http://ifoundone.projecd.org/view/${uid}`,
 					place: req.body.place,
-					//gps: req.body.gps,
 					//exif: req.body.exif,
+					gps: req.body.gps
 				})
-				//photo.exif.set(req.body.exif)// !!
-				//photo.gps.set(req.body.gps)// !!
 				plc.photos.push(uid)
 				plc.save()
 				return photo.save()
@@ -136,7 +135,7 @@ router.post('/', (req, res, next) => {
 					url: result.url,
 					request: {
 						type: 'GET',
-						url: `http://ifound-rest.herokuapp.com/api/photos/${result._id}`
+						url: process.env.REST_URL + `/api/photos/${result._id}`
 					}
 				}
 			})
@@ -169,7 +168,7 @@ router.get('/avatars', (req, res, next) => {
 							place: rslt.place,
 							request: {
 								type: 'GET',
-								url: `http://ifound-rest.herokuapp.com/api/photos/avatars/${rslt._id}`
+								url: process.env.REST_URL + `/api/photos/avatars/${rslt._id}`
 							}
 						}
 					})
@@ -211,7 +210,7 @@ router.post('/avatars', upload.single('photoData'), (req, res, next) => {
 					url: result.url,
 					request: {
 						type: 'GET',
-						url: `http://ifound-rest.herokuapp.com/api/photos/avatars/${uid}`
+						url: process.env.REST_URL + `/api/photos/avatars/${uid}`
 					}
 				}
 			})
@@ -239,7 +238,7 @@ router.get('/:photoID', (req, res, next) => {
 					photo: pic,
 					request: {
 						type: 'GET',
-						url: 'http://ifound-rest.herokuapp.com/api/photos'
+						url: process.env.REST_URL + '/api/photos'
 					}
 				})
 			} else {
@@ -271,7 +270,7 @@ router.delete('/:photoID', auth, (req, res, next) => {
 				_id: id,
 				request: {
 					type: 'POST',
-					url: 'http://ifound-rest.herokuapp.com/api/photos',
+					url: process.env.REST_URL + '/api/photos',
 					body: {
 						'url': 'String',
 						'isAvatar': 'Boolean (false)',
@@ -334,7 +333,7 @@ router.delete('/avatars/:avatarID', auth, (req, res, next) => {
 				_id: id,
 				request: {
 					type: 'POST',
-					url: 'http://ifound-rest.herokuapp.com/api/photos/avatars',
+					url: process.env.REST_URL + '/api/photos/avatars',
 					body: {
 						'url': 'String',
 						'isAvatar': 'Boolean (true)',
