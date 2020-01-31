@@ -137,6 +137,9 @@ router.post('/', upload.fields([
 				: (req.files.cameraData) ? req.files.cameraData[0] : null
 			if (incoming && incoming !== null)
 				new ExifImage({ image: incoming.buffer }, (error, exifData) => {
+					const ex = (exifData && exifData.exif) ? exifData.exif : null
+					const gp = (exifData && exifData.gps) ? gpsData.exif : null
+					if (!exifData) console.error(error)
 					fetch(process.env.REST_URL + '/api/photos', {
 						method: 'post',
 						headers: {
@@ -144,8 +147,8 @@ router.post('/', upload.fields([
 						},
 						body: JSON.stringify({
 							place: result._id,
-							exif: exifData.exif,
-							gps: exifData.gps
+							exif: ex,
+							gps: gp
 						})
 					})
 						.then(response => {
