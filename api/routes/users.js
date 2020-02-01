@@ -73,8 +73,12 @@ router.post('/login', (req, res, next) => {
 							email: user[0].email,
 						},
 						process.env.JWT_KEY,
-						{ expiresIn: 60 * 60 }//1h
+						//{ expiresIn: 60 * 60 }//1h
+						{ expiresIn: 60 * 10 }//10min
 					)
+					
+					//res.set('Set-Cookie','Cokkie1=test')
+					res.cookie('cookie1','asefas', { maxAge: 60*60, httpOnly: true })
 					return res.status(200).json({
 						message: 'Authorisation was successful.',
 						token: token
