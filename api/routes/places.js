@@ -138,7 +138,7 @@ router.post('/', upload.fields([
 			if (incoming && incoming !== null)
 				new ExifImage({ image: incoming.buffer }, (error, exifData) => {
 					const ex = (exifData && exifData.exif) ? exifData.exif : null
-					const gp = (exifData && exifData.gps) ? gpsData.exif : null
+					const gp = (exifData && exifData.gps) ? exifData.gps : null
 					if (!exifData) console.error(error)
 					fetch(process.env.REST_URL + '/api/photos', {
 						method: 'post',
@@ -178,7 +178,7 @@ router.post('/', upload.fields([
 											lat: result.lat,
 											lng: result.lng,
 											range: result.range,
-											gps: incoming.gps,
+											gps: gp,
 											request: {
 												type: 'GET',
 												url: process.env.REST_URL + '/api/places/' + result._id

@@ -466,7 +466,6 @@ const gpsSchema = new Schema({
 	GPSDifferential: Number,
 	//GPSHPositioningErro: Number
 })
-const Exif = mongoose.model('Exif', exifSchema)
 const photoSchema = new Schema({
 	_id: mongoose.Schema.Types.ObjectId,
 	url: { type: String, required: true },
