@@ -250,7 +250,7 @@ router.get('/:placeID', (req, res, next) => {
 		})
 })
 
-router.patch('/:placeID', auth, (req, res, next) => {
+router.patch('/:placeID', /* auth, */ (req, res, next) => {
 	const id = req.params.placeID
 	const updateOps = {}
 	for (const ops of req.body) {
@@ -266,7 +266,7 @@ router.patch('/:placeID', auth, (req, res, next) => {
 			console.log(result)
 			res.status(200).json({
 				message: `PATCH request to /api/places/${id} is good.`,
-				//updatedPlace: result,
+				updatedPlace: result,
 				request: {
 					type: 'GET',
 					url: process.env.REST_URL + `/api/places/${id}`
@@ -276,6 +276,7 @@ router.patch('/:placeID', auth, (req, res, next) => {
 		.catch(err => {
 			console.error(err)
 			res.status(500).json({
+				updateOps: updateOps,
 				error: err
 			})
 		})
