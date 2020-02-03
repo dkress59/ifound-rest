@@ -88,8 +88,9 @@ router.get('/', (req, res, next) => {
 				}
 				res.status(200).json(response)
 			} else {
-				res.status(404).json({
-					message: 'No photos found.'
+				res.status(200).json({
+					message: 'No photos found.',
+					photos: []
 				})
 			}
 		})

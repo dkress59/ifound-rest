@@ -77,7 +77,7 @@ router.post('/login', (req, res, next) => {
 					)
 					
 					//res.set('Set-Cookie','Cokkie1=test')
-					res.cookie('token', token, { maxAge: process.env.AUTH_TIME, httpOnly: true })
+					//res.cookie('token', token, { maxAge: process.env.AUTH_TIME, httpOnly: true })
 					return res.status(200).json({
 						message: 'Authorisation was successful.',
 						token: token

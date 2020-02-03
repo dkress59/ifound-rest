@@ -100,8 +100,12 @@ router.get('/', (req, res, next) => {
 				}
 				res.status(200).json(response)
 			} else {
-				res.status(404).json({
+				/* res.status(404).json({
 					message: 'No places found.'
+				}) */
+				res.status(200).json({
+					message: 'No places found.',
+					places: []
 				})
 			}
 		})
@@ -260,6 +264,7 @@ router.patch('/:placeID', /* auth, */ (req, res, next) => {
 	const updateOps = {
 		lat:4, lng:4
 	} */
+	//console.log('GPS',req.body)
 	Place.updateOne({
 		_id: id
 	}, {
@@ -287,6 +292,7 @@ router.patch('/:placeID', /* auth, */ (req, res, next) => {
 })
 
 router.delete('/:placeID', auth, (req, res, next) => {
+	//console.log('DELETE TOKEN', req.headers.authorization)
 	const id = req.params.placeID
 	Place.find({ _id: id })
 		.select('photos')
