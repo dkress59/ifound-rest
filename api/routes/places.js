@@ -252,14 +252,18 @@ router.get('/:placeID', (req, res, next) => {
 
 router.patch('/:placeID', /* auth, */ (req, res, next) => {
 	const id = req.params.placeID
-	const updateOps = {}
+	/* let updateOpss = {}
 	for (const ops of req.body) {
 		updateOps[ops.propName] = ops.value
 	}
-	Place.update({
+	console.log('updateOps', updateOpss)
+	const updateOps = {
+		lat:4, lng:4
+	} */
+	Place.updateOne({
 		_id: id
 	}, {
-		$set: updateOps
+		$set: req.body
 	})
 		.exec()
 		.then(result => {
