@@ -54,6 +54,7 @@ const phpSendFile = (file, size, type, id, isAva, handle) => {
 		response.on('end', function () {
 			if (handleResponse)
 				handleResponse(JSON.parse(str))
+				&& console.log('phpSendFile response:', JSON.parse(str))
 			else
 				console.log('phpSendFile response:', JSON.parse(str))
 		});
