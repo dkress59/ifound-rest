@@ -433,7 +433,7 @@ const exifSchema = new Schema({
 	MoireFilte: Number
 })
 const gpsSchema = new Schema({
-	GPSVersionID: Number,
+	GPSVersionID: (Number || Array),
 	GPSLatitudeRef: String,
 	GPSLatitude: Array,
 	GPSLongitudeRef: String,
