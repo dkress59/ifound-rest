@@ -65,7 +65,7 @@ const phpSendFile = (file, size, type, id, isAva, handle) => {
 	req.write(file)
 	req.end()
 }
-const fetch = require('cross-fetch')//not polyfilled
+const fetch = require('cross-fetch')
 
 const exif = require('exif')
 const ExifImage = exif.ExifImage
@@ -75,7 +75,7 @@ const ExifImage = exif.ExifImage
 // ALL PLACES
 router.get('/', (req, res, next) => {
 	Place.find()
-		.select('name author avatar photos lat lng range')
+		.select('name author avatar created photos lat lng range')
 		.exec()
 		.then(places => {
 			console.log(places)
@@ -88,7 +88,8 @@ router.get('/', (req, res, next) => {
 							_id: plc._id,
 							name: plc.name,
 							author: plc.author,
-							avatar: plc.avatar,
+							//avatar: plc.avatar,
+							created: plc.created,
 							photos: plc.photos,
 							lat: plc.lat,
 							lng: plc.lng,
