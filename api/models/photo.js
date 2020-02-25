@@ -433,7 +433,7 @@ const exifSchema = new Schema({
 	MoireFilte: Number
 })
 const gpsSchema = new Schema({
-	GPSVersionID: (Number || Array),
+	GPSVersionID: mongoose.Schema.Types.Mixed,
 	GPSLatitudeRef: String,
 	GPSLatitude: Array,
 	GPSLongitudeRef: String,

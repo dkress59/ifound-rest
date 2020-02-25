@@ -194,7 +194,8 @@ router.post('/', upload.fields([
 									})
 								}
 							}
-							phpSendFile(incoming.buffer, incoming.size, incoming.mimetype, obj.newPhoto._id, uploadSuccess)
+							if (obj.newPhoto) phpSendFile(incoming.buffer, incoming.size, incoming.mimetype, obj.newPhoto._id, uploadSuccess)
+							else console.error(obj.error)// !! Throw an error here !!
 						})
 				})
 			else
