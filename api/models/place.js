@@ -13,5 +13,6 @@ const placeSchema = new Schema({
 	created: { type: mongoose.Schema.Types.Date, default: Date.now },
 	ip: String
 });
+placeSchema.index({name: 'text', author: 'text', _id: 'text'})
 
 module.exports = mongoose.model('Place', placeSchema);
