@@ -1,4 +1,4 @@
-// https://iFound.one/api/users
+// http://api.iFound.one/users
 
 const express = require('express')
 const router = express.Router()
@@ -33,7 +33,7 @@ router.post('/signup', (req, res, next) => {
 					.then(result => {
 						console.log(result)
 						res.status(201).json({
-							message: 'POST request to /api/signup is good.'
+							message: 'POST request to /signup is good.'
 						})
 					})
 					.catch(err => {

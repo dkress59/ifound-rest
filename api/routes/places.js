@@ -1,4 +1,4 @@
-// https://iFound.one/api/places
+// http://api.iFound.one/places
 
 const express = require('express')
 const router = express.Router()
@@ -36,7 +36,7 @@ const phpSendFile = (file, size, type, id, isAva, handle) => {
 		? '/upload/user/'
 		: '/upload/'
 	const options = {
-		hostname: "ifoundone.projecd.org",
+		hostname: "media.ifound.one",
 		port: 80,
 		path: path + id + '&type=' + type,
 		method: 'POST',
@@ -81,7 +81,7 @@ router.get('/', (req, res, next) => {
 			console.log(places)
 			if (places.length > 0) {
 				const response = {
-					message: 'GET request to /api/places is good.',
+					message: 'GET request to /places is good.',
 					count: places.length,
 					places: places.map(plc => {
 						return {
@@ -96,7 +96,7 @@ router.get('/', (req, res, next) => {
 							range: plc.range,
 							request: {
 								type: 'GET',
-								url: process.env.REST_URL + '/api/places/' + plc._id
+								url: process.env.REST_URL + '/places/' + plc._id
 							}
 						}
 					}),
@@ -147,7 +147,7 @@ router.post('/', upload.fields([
 					const ex = (exifData && exifData.exif) ? exifData.exif : null
 					const gp = (exifData && exifData.gps) ? exifData.gps : null
 					if (!exifData) console.error(error)
-					fetch(process.env.REST_URL + '/api/photos', {
+					fetch(process.env.REST_URL + '/photos', {
 						method: 'post',
 						headers: {
 							'Content-Type': 'application/json',
@@ -175,7 +175,7 @@ router.post('/', upload.fields([
 								else {
 									console.log('…is good.')
 									return res.status(201).json({
-										message: 'POST request to /api/places is good.',
+										message: 'POST request to /places is good.',
 										newPlace: {
 											_id: result._id,
 											name: result.name,
@@ -188,7 +188,7 @@ router.post('/', upload.fields([
 											gps: gp,
 											request: {
 												type: 'GET',
-												url: process.env.REST_URL + '/api/places/' + result._id
+												url: process.env.REST_URL + '/places/' + result._id
 											}
 										},
 										php: phpRresponse
@@ -201,7 +201,7 @@ router.post('/', upload.fields([
 				})
 			else
 				return res.status(201).json({
-					message: 'POST request to /api/places is good.',
+					message: 'POST request to /places is good.',
 					newPlace: {
 						_id: result._id,
 						name: result.name,
@@ -213,7 +213,7 @@ router.post('/', upload.fields([
 						range: result.range,
 						request: {
 							type: 'GET',
-							url: process.env.REST_URL + '/api/places/' + result._id
+							url: process.env.REST_URL + '/places/' + result._id
 						}
 					}
 				})
@@ -239,7 +239,7 @@ router.get('/:placeID', (req, res, next) => {
 					place: plc,
 					request: {
 						type: 'GET',
-						url: 'http://ifoundone.projecd.org/api/places'
+						url: process.env.REST_URL + '/places'
 					}
 				})
 			} else {
@@ -278,11 +278,11 @@ router.patch('/:placeID', /* auth, */ (req, res, next) => {
 		.then(result => {
 			console.log(result)
 			res.status(200).json({
-				message: `PATCH request to /api/places/${id} is good.`,
+				message: `PATCH request to /places/${id} is good.`,
 				updatedPlace: result,
 				request: {
 					type: 'GET',
-					url: process.env.REST_URL + `/api/places/${id}`
+					url: process.env.REST_URL + `/places/${id}`
 				}
 			})
 		})
@@ -306,7 +306,7 @@ router.delete('/:placeID', auth, (req, res, next) => {
 				for (let photo of result[0].photos) {
 					Photo.deleteOne({ _id: photo })
 						.exec()
-					fetch('https://ifoundone.projecd.org/delete/' + photo)
+					fetch(process.env.MEDIA_URL + '/delete/' + photo)
 					//.then(php => { if (php.status !== '204') console.error('Error: ', php) })// ?? //
 				}
 		})
@@ -321,7 +321,7 @@ router.delete('/:placeID', auth, (req, res, next) => {
 				_id: id,
 				request: {
 					type: 'POST',
-					url: process.env.REST_URL + '/api/places',
+					url: process.env.REST_URL + '/places',
 					body: {
 						'name': 'String',
 						'author': 'String',
@@ -348,7 +348,7 @@ router.get('/:placeID/photos', (req, res, next) => {
 			console.log(photos)
 			if (photos.length > 0) {
 				const response = {
-					message: `GET request to /api/places/${id}/photos is good.`,
+					message: `GET request to /places/${id}/photos is good.`,
 					count: photos.length,
 					photos: photos.map(rslt => {
 						return {
@@ -357,7 +357,7 @@ router.get('/:placeID/photos', (req, res, next) => {
 							//place: rslt.place,
 							request: {
 								type: 'GET',
-								url: process.env.REST_URL + `/api/photos/${rslt._id}`
+								url: process.env.REST_URL + `/photos/${rslt._id}`
 							}
 						}
 					})

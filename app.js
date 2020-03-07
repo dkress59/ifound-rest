@@ -42,13 +42,13 @@ app.use(bodyParser.json())
 //app.use(cookieParser())
 
 
-app.use('/api/places', placesRoutes)
-app.use('/api/photos', photosRoutes)
-app.use('/api/users', usersRoutes)
+app.use('/places', placesRoutes)
+app.use('/photos', photosRoutes)
+app.use('/users', usersRoutes)
 
-app.use('/api/', (req, res, next) => {
+app.use('/', (req, res, next) => {
 	res.status(200).json({
-		message: 'Either go to /api/places or to /api/photos'
+		message: 'Either go to /places or to /photos'
 	})
 })
 

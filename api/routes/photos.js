@@ -1,5 +1,5 @@
-// https://iFound.one/api/photos/
-// https://iFound.one/api/photos/avatars
+// http://api.iFound.one/photos/
+// http://api.iFound.one/photos/avatars
 
 const express = require('express')
 const router = express.Router()
@@ -30,7 +30,7 @@ const phpSendFile = (file, size, type, id, isAva) => {
 		? '/upload/user/'
 		: '/upload/'
 	const options = {
-		hostname: "ifoundone.projecd.org",
+		hostname: "media.ifound.one",
 		port: 80,
 		path: path + id + '&type=' + type,
 		method: 'POST',
@@ -73,7 +73,7 @@ router.get('/', (req, res, next) => {
 			console.log(photos)
 			if (photos.length > 0) {
 				const response = {
-					message: 'GET request to /api/photos is good.',
+					message: 'GET request to /photos is good.',
 					count: photos.length,
 					photos: photos.map(rslt => {
 						return {
@@ -82,7 +82,7 @@ router.get('/', (req, res, next) => {
 							place: rslt.place,
 							request: {
 								type: 'GET',
-								url: process.env.REST_URL + `/api/photos/${rslt._id}`
+								url: process.env.REST_URL + `/photos/${rslt._id}`
 							}
 						}
 					})
@@ -112,7 +112,7 @@ router.post('/', (req, res, next) => {
 				const photo = new Photo({
 					_id: uid,
 					isAvatar: false,
-					url: `http://ifoundone.projecd.org/view/${uid}`,
+					url: process.env.MEDIA_URL + `/view/${uid}`,
 					place: req.body.place,
 					//exif: req.body.exif,
 					gps: req.body.gps
@@ -129,7 +129,7 @@ router.post('/', (req, res, next) => {
 		.then(result => {
 			console.log(result)
 			res.status(201).json({
-				message: 'POST request to /api/photos is good.',
+				message: 'POST request to /photos is good.',
 				newPhoto: {
 					_id: result._id,
 					isAvatar: result.isAvatar,
@@ -137,7 +137,7 @@ router.post('/', (req, res, next) => {
 					url: result.url,
 					request: {
 						type: 'GET',
-						url: process.env.REST_URL + `/api/photos/${result._id}`
+						url: process.env.REST_URL + `/photos/${result._id}`
 					}
 				}
 			})
@@ -161,7 +161,7 @@ router.get('/avatars', (req, res, next) => {
 			console.log(avatars)
 			if (avatars.length > 0) {
 				const response = {
-					message: 'GET request to /api/photos/avatars is good.',
+					message: 'GET request to /photos/avatars is good.',
 					count: avatars.length,
 					avatars: avatars.map(rslt => {
 						return {
@@ -170,7 +170,7 @@ router.get('/avatars', (req, res, next) => {
 							place: rslt.place,
 							request: {
 								type: 'GET',
-								url: process.env.REST_URL + `/api/photos/avatars/${rslt._id}`
+								url: process.env.REST_URL + `/photos/avatars/${rslt._id}`
 							}
 						}
 					})
@@ -196,7 +196,7 @@ router.post('/avatars', upload.single('photoData'), (req, res, next) => {
 	const avatar = new Photo({
 		_id: uid,
 		isAvatar: true,
-		url: `http://ifoundone.projecd.org/view/users/${uid}`,
+		url: process.env.MEDIA_URL + `/view/users/${uid}`,
 		place: req.body.place
 	})
 	phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, avatar._id, true);
@@ -204,7 +204,7 @@ router.post('/avatars', upload.single('photoData'), (req, res, next) => {
 		.then(result => {
 			console.log(result)
 			res.status(201).json({
-				message: 'POST request to /api/photos/avatars is good.',
+				message: 'POST request to /photos/avatars is good.',
 				newAvatar: {
 					_id: result._id,
 					isAvatar: result.isAvatar,
@@ -212,7 +212,7 @@ router.post('/avatars', upload.single('photoData'), (req, res, next) => {
 					url: result.url,
 					request: {
 						type: 'GET',
-						url: process.env.REST_URL + `/api/photos/avatars/${uid}`
+						url: process.env.REST_URL + `/photos/avatars/${uid}`
 					}
 				}
 			})
@@ -240,7 +240,7 @@ router.get('/:photoID', (req, res, next) => {
 					photo: pic,
 					request: {
 						type: 'GET',
-						url: process.env.REST_URL + '/api/photos'
+						url: process.env.REST_URL + '/photos'
 					}
 				})
 			} else {
@@ -272,7 +272,7 @@ router.delete('/:photoID', auth, (req, res, next) => {
 				_id: id,
 				request: {
 					type: 'POST',
-					url: process.env.REST_URL + '/api/photos',
+					url: process.env.REST_URL + '/photos',
 					body: {
 						'url': 'String',
 						'isAvatar': 'Boolean (false)',
@@ -302,7 +302,7 @@ router.get('/avatars/:avatarID', (req, res, next) => {
 					avatar: ava,
 					request: {
 						type: 'GET',
-						url: 'http://ifoundone.projecd.org/api/photos/avatars'
+						url: process.env.REST_URL + '/photos/avatars'
 					}
 				})
 			} else {
@@ -335,7 +335,7 @@ router.delete('/avatars/:avatarID', auth, (req, res, next) => {
 				_id: id,
 				request: {
 					type: 'POST',
-					url: process.env.REST_URL + '/api/photos/avatars',
+					url: process.env.REST_URL + '/photos/avatars',
 					body: {
 						'url': 'String',
 						'isAvatar': 'Boolean (true)',
