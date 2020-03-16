@@ -38,7 +38,7 @@ const phpSendFile = (file, size, type, id, isAva, handle) => {
 	const options = {
 		hostname: process.env.MEDIA_URL,
 		port: 80,
-		path: path + id + '&type=' + type,
+		path: path + '?id=' + id + '&type=' + type,
 		method: 'POST',
 		headers: {
 			'Content-Type': type,
