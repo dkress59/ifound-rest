@@ -30,7 +30,7 @@ const phpSendFile = (file, size, type, id, isAva) => {
 		? '/upload/user/'
 		: '/upload/'
 	const options = {
-		hostname: "media.ifound.one",
+		hostname: process.env.MEDIA_URL.replace(/https?:\/\//, ''),
 		port: 80,
 		path: path + id + '&type=' + type,
 		method: 'POST',

@@ -41,6 +41,7 @@ app.use((req, res, next) => {
 app.use(morgan('dev'))
 app.use(bodyParser.urlencoded({ extended: false }) )
 app.use(bodyParser.json())
+app.use(bodyParser({filter:'12mb'}))
 //app.use(cookieParser())
 
 
