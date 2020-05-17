@@ -79,7 +79,7 @@ router.get('/', (req, res, next) => {
 		.exec()
 		.then(places => {
 			console.log(places)
-			if (places.length > 0) {
+			if (places.length) {
 				const response = {
 					message: 'GET request to /places is good.',
 					count: places.length,
