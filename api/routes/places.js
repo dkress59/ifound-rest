@@ -9,6 +9,11 @@ const mongoose = require('mongoose')
 const Photo = require('../models/photo')
 const auth = require('../auth/check')
 
+const fetch = require('cross-fetch')
+
+const exif = require('exif')
+const ExifImage = exif.ExifImage
+
 const multer = require('multer')
 const fileFilter = (req, file, cb) => {
 	if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/pjpeg') {
@@ -65,10 +70,6 @@ const phpSendFile = (file, size, type, id, isAva, handle) => {
 	req.write(file)
 	req.end()
 }
-const fetch = require('cross-fetch')
-
-const exif = require('exif')
-const ExifImage = exif.ExifImage
 
 
 
