@@ -7,11 +7,12 @@ This Web App is almost progressive, solely the no-js prerender still needs to be
 
 ### Back-End
 
-This is the NodeJS [REST API](https://api.ifound.one) Back-End, using Express with Multer, Mongoose, JWT Authorisation and polyfilled Fetch support. **The external PHP file server is excluded from this repo for security reasons.**
+This is the NodeJS [REST API](https://api.ifound.one) Back-End, using Express with Multer, Mongoose, JWT Authorisation and polyfilled Fetch support. This app runs on [Heroku](https://www.heroku.com). **The external PHP file server is excluded from this repo for security reasons.**
 
 
 
 ### To Do
 
+* Update the Minimist dependencies (GitHub security alert)
 * Only let authorised, registered users create new users
 * Add method for image rotation from Admin Front-End
