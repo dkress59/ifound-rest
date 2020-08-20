@@ -16,7 +16,7 @@
   "author": "Damian Kress",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^3.0.7",
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "cross-fetch": "^3.0.4",
     "exif": "^0.6.0",
