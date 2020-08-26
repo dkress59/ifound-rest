@@ -23,7 +23,7 @@ router.post('/signup', (req, res, next) => {
 					return res.status(500).json({
 						error: err
 					})
-		
+
 				const user = new User({
 					_id: mongoose.Types.ObjectId(),
 					email: req.body.email,
@@ -60,7 +60,7 @@ router.post('/login', (req, res, next) => {
 				return res.status(404).json({
 					message: `User ${req.body.email} not found.`
 				})
-			
+
 			bcrypt.compare(req.body.password, user[0].password, (err, match) => {
 				if (err || !match)
 					return res.status(401).json({
@@ -72,12 +72,12 @@ router.post('/login', (req, res, next) => {
 							_id: user[0]._id,
 							email: user[0].email,
 						},
-						process.env.JWT_KEY,
-						{ expiresIn: process.env.AUTH_TIME }
+						process.env.IFO_JWT_KEY,
+						{ expiresIn: process.env.IFO_AUTH_TIME }
 					)
-					
+
 					//res.set('Set-Cookie','Cokkie1=test')
-					//res.cookie('token', token, { maxAge: process.env.AUTH_TIME, httpOnly: true })
+					//res.cookie('token', token, { maxAge: process.env.IFO_AUTH_TIME, httpOnly: true })
 					return res.status(200).json({
 						message: 'Authorisation was successful.',
 						token: token

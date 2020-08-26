@@ -41,7 +41,7 @@ const phpSendFile = (file, size, type, id, isAva, handle) => {
 		? '/upload/user/'
 		: '/upload/'
 	const options = {
-		hostname: process.env.MEDIA_URL.replace(/https?:\/\//, ''),
+		hostname: process.env.IFO_MEDIA_URL.replace(/https?:\/\//, ''),
 		port: 80,
 		path: path + '?id=' + id + '&type=' + type,
 		method: 'POST',
@@ -59,7 +59,7 @@ const phpSendFile = (file, size, type, id, isAva, handle) => {
 		response.on('end', function () {
 			if (handleResponse)
 				handleResponse(JSON.parse(str))
-				&& console.log('phpSendFile response:', JSON.parse(str))
+					&& console.log('phpSendFile response:', JSON.parse(str))
 			else
 				console.log('phpSendFile response:', JSON.parse(str))
 		});
@@ -97,7 +97,7 @@ router.get('/', (req, res, next) => {
 							range: plc.range,
 							request: {
 								type: 'GET',
-								url: process.env.REST_URL + '/places/' + plc._id
+								url: process.env.IFO_REST_URL + '/places/' + plc._id
 							}
 						}
 					}),
@@ -148,7 +148,7 @@ router.post('/', upload.fields([
 					const ex = (exifData && exifData.exif) ? exifData.exif : null
 					const gp = (exifData && exifData.gps) ? exifData.gps : null
 					if (!exifData) console.error(error)
-					fetch(process.env.REST_URL + '/photos', {
+					fetch(process.env.IFO_REST_URL + '/photos', {
 						method: 'post',
 						headers: {
 							'Content-Type': 'application/json',
@@ -189,7 +189,7 @@ router.post('/', upload.fields([
 											gps: gp,
 											request: {
 												type: 'GET',
-												url: process.env.REST_URL + '/places/' + result._id
+												url: process.env.IFO_REST_URL + '/places/' + result._id
 											}
 										},
 										php: phpRresponse
@@ -214,7 +214,7 @@ router.post('/', upload.fields([
 						range: result.range,
 						request: {
 							type: 'GET',
-							url: process.env.REST_URL + '/places/' + result._id
+							url: process.env.IFO_REST_URL + '/places/' + result._id
 						}
 					}
 				})
@@ -240,7 +240,7 @@ router.get('/:placeID', (req, res, next) => {
 					place: plc,
 					request: {
 						type: 'GET',
-						url: process.env.REST_URL + '/places'
+						url: process.env.IFO_REST_URL + '/places'
 					}
 				})
 			} else {
@@ -259,7 +259,7 @@ router.get('/:placeID', (req, res, next) => {
 		})
 })
 
-router.patch('/:placeID', /* auth, */ (req, res, next) => {
+router.patch('/:placeID', /* auth, */(req, res, next) => {
 	const id = req.params.placeID
 	/* let updateOpss = {}
 	for (const ops of req.body) {
@@ -283,7 +283,7 @@ router.patch('/:placeID', /* auth, */ (req, res, next) => {
 				updatedPlace: result,
 				request: {
 					type: 'GET',
-					url: process.env.REST_URL + `/places/${id}`
+					url: process.env.IFO_REST_URL + `/places/${id}`
 				}
 			})
 		})
@@ -307,7 +307,7 @@ router.delete('/:placeID', auth, (req, res, next) => {
 				for (let photo of result[0].photos) {
 					Photo.deleteOne({ _id: photo })
 						.exec()
-					fetch(process.env.MEDIA_URL + '/delete/' + photo)
+					fetch(process.env.IFO_MEDIA_URL + '/delete/' + photo)
 					//.then(php => { if (php.status !== '204') console.error('Error: ', php) })// ?? //
 				}
 		})
@@ -322,7 +322,7 @@ router.delete('/:placeID', auth, (req, res, next) => {
 				_id: id,
 				request: {
 					type: 'POST',
-					url: process.env.REST_URL + '/places',
+					url: process.env.IFO_REST_URL + '/places',
 					body: {
 						'name': 'String',
 						'author': 'String',
@@ -358,7 +358,7 @@ router.get('/:placeID/photos', (req, res, next) => {
 							//place: rslt.place,
 							request: {
 								type: 'GET',
-								url: process.env.REST_URL + `/photos/${rslt._id}`
+								url: process.env.IFO_REST_URL + `/photos/${rslt._id}`
 							}
 						}
 					})

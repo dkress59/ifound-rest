@@ -14,11 +14,11 @@ const usersRoutes = require('./api/routes/users')
 
 mongoose.connect(
 	'mongodb+srv://atlastest:' +
-	process.env.MONGO_ATLAS_PW +
+	process.env.IFO_MONGO_ATLAS_PW +
 	'@cluster0-guz2q.mongodb.net/iFound-one?retryWrites=true&w=majority', {
-		useNewUrlParser: true,
-		useUnifiedTopology: true
-	}
+	useNewUrlParser: true,
+	useUnifiedTopology: true
+}
 )
 
 
@@ -39,9 +39,9 @@ app.use((req, res, next) => {
 })
 //app.use(cors())
 app.use(morgan('dev'))
-app.use(bodyParser.urlencoded({ extended: false }) )
+app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-app.use(bodyParser({filter:'12mb'}))
+app.use(bodyParser({ filter: '12mb' }))
 //app.use(cookieParser())
 
 

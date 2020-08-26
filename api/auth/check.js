@@ -4,7 +4,7 @@ module.exports = (req, res, next) => {
 
 	if (req.headers.authorization !== undefined)
 		try {
-			const decoded = jwt.verify(req.headers.authorization.split(" ")[1], process.env.JWT_KEY, { ignoreExpiration: true })// verifies AND decodes
+			const decoded = jwt.verify(req.headers.authorization.split(" ")[1], process.env.IFO_JWT_KEY, { ignoreExpiration: true })// verifies AND decodes
 			//req.userData = decoded// attaches userData to future requests
 			console.log('AUTH success')
 			next()

@@ -9,7 +9,7 @@ const multer = require('multer')
 const fileFilter = (req, file, cb) => {
 	if (
 		file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'
-		) {
+	) {
 		cb(null, true)
 	} else {
 		cb(null, false)
@@ -30,7 +30,7 @@ const phpSendFile = (file, size, type, id, isAva) => {
 		? '/upload/user/'
 		: '/upload/'
 	const options = {
-		hostname: process.env.MEDIA_URL.replace(/https?:\/\//, ''),
+		hostname: process.env.IFO_MEDIA_URL.replace(/https?:\/\//, ''),
 		port: 80,
 		path: path + id + '&type=' + type,
 		method: 'POST',
@@ -64,8 +64,8 @@ const auth = require('../auth/check')
 // ALL PHOTOS
 router.get('/', (req, res, next) => {
 	Photo.find({
-			isAvatar: false
-		})
+		isAvatar: false
+	})
 		.select('url place')
 		//.populate('place', 'name author')
 		.exec()
@@ -82,7 +82,7 @@ router.get('/', (req, res, next) => {
 							place: rslt.place,
 							request: {
 								type: 'GET',
-								url: process.env.REST_URL + `/photos/${rslt._id}`
+								url: process.env.IFO_REST_URL + `/photos/${rslt._id}`
 							}
 						}
 					})
@@ -112,7 +112,7 @@ router.post('/', (req, res, next) => {
 				const photo = new Photo({
 					_id: uid,
 					isAvatar: false,
-					url: process.env.MEDIA_URL + `/view/${uid}`,
+					url: process.env.IFO_MEDIA_URL + `/view/${uid}`,
 					place: req.body.place,
 					//exif: req.body.exif,
 					gps: req.body.gps
@@ -137,7 +137,7 @@ router.post('/', (req, res, next) => {
 					url: result.url,
 					request: {
 						type: 'GET',
-						url: process.env.REST_URL + `/photos/${result._id}`
+						url: process.env.IFO_REST_URL + `/photos/${result._id}`
 					}
 				}
 			})
@@ -153,8 +153,8 @@ router.post('/', (req, res, next) => {
 // ALL AVATARS
 router.get('/avatars', (req, res, next) => {
 	Photo.find({
-			isAvatar: true
-		})
+		isAvatar: true
+	})
 		.select('url place')
 		.exec()
 		.then(avatars => {
@@ -170,7 +170,7 @@ router.get('/avatars', (req, res, next) => {
 							place: rslt.place,
 							request: {
 								type: 'GET',
-								url: process.env.REST_URL + `/photos/avatars/${rslt._id}`
+								url: process.env.IFO_REST_URL + `/photos/avatars/${rslt._id}`
 							}
 						}
 					})
@@ -196,7 +196,7 @@ router.post('/avatars', upload.single('photoData'), (req, res, next) => {
 	const avatar = new Photo({
 		_id: uid,
 		isAvatar: true,
-		url: process.env.MEDIA_URL + `/view/users/${uid}`,
+		url: process.env.IFO_MEDIA_URL + `/view/users/${uid}`,
 		place: req.body.place
 	})
 	phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, avatar._id, true);
@@ -212,7 +212,7 @@ router.post('/avatars', upload.single('photoData'), (req, res, next) => {
 					url: result.url,
 					request: {
 						type: 'GET',
-						url: process.env.REST_URL + `/photos/avatars/${uid}`
+						url: process.env.IFO_REST_URL + `/photos/avatars/${uid}`
 					}
 				}
 			})
@@ -240,7 +240,7 @@ router.get('/:photoID', (req, res, next) => {
 					photo: pic,
 					request: {
 						type: 'GET',
-						url: process.env.REST_URL + '/photos'
+						url: process.env.IFO_REST_URL + '/photos'
 					}
 				})
 			} else {
@@ -262,8 +262,8 @@ router.get('/:photoID', (req, res, next) => {
 router.delete('/:photoID', auth, (req, res, next) => {
 	const id = req.params.photoID
 	Photo.remove({
-			_id: id
-		})
+		_id: id
+	})
 		.exec()
 		.then(result => {
 			console.log(result)
@@ -272,7 +272,7 @@ router.delete('/:photoID', auth, (req, res, next) => {
 				_id: id,
 				request: {
 					type: 'POST',
-					url: process.env.REST_URL + '/photos',
+					url: process.env.IFO_REST_URL + '/photos',
 					body: {
 						'url': 'String',
 						'isAvatar': 'Boolean (false)',
@@ -302,7 +302,7 @@ router.get('/avatars/:avatarID', (req, res, next) => {
 					avatar: ava,
 					request: {
 						type: 'GET',
-						url: process.env.REST_URL + '/photos/avatars'
+						url: process.env.IFO_REST_URL + '/photos/avatars'
 					}
 				})
 			} else {
@@ -325,8 +325,8 @@ router.get('/avatars/:avatarID', (req, res, next) => {
 router.delete('/avatars/:avatarID', auth, (req, res, next) => {
 	const id = req.params.avatarID
 	Photo.remove({
-			_id: id
-		})
+		_id: id
+	})
 		.exec()
 		.then(result => {
 			console.log(result)
@@ -335,7 +335,7 @@ router.delete('/avatars/:avatarID', auth, (req, res, next) => {
 				_id: id,
 				request: {
 					type: 'POST',
-					url: process.env.REST_URL + '/photos/avatars',
+					url: process.env.IFO_REST_URL + '/photos/avatars',
 					body: {
 						'url': 'String',
 						'isAvatar': 'Boolean (true)',
