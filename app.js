@@ -55,7 +55,7 @@ app.use('/update', (req, res) => {
 		res.status(500).send({ error: 'Update failed.' })
 	} else {
 		res.send({ message: 'Update complete.' })
-		shell.exec('/usr/local/bin/pm2 restart ifound-rest')
+		//shell.exec('/usr/local/bin/pm2 restart ifound-rest')
 	}
 })
 
