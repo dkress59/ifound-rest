@@ -51,7 +51,7 @@ app.use('/photos', photosRoutes)
 app.use('/users', usersRoutes)
 
 app.use('/update', (req, res) => {
-	if (shell.exec('/var/www/ifound-rest/update.sh').code !== 0) {
+	if (shell.exec('/var/www/pull-ifound-rest.sh').code !== 0) {
 		res.status(500).send({ error: 'Update failed.' })
 	} else {
 		res.send({ message: 'Update complete.' })
@@ -61,7 +61,7 @@ app.use('/update', (req, res) => {
 
 app.use('/', (req, res, next) => {
 	res.status(200).json({
-		message: 'You can choose to go to /places or to /photos.'
+		message: 'You can go to /places or to /photos.'
 	})
 })
 
