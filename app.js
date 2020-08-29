@@ -54,13 +54,13 @@ app.use('/update', (req, res) => {
 	if (shell.exec('./update.sh').code !== 0) {
 		res.send({ error: 'Update failed.' })
 	} else {
-		res.send({ message: 'Update finished.' })
+		res.send({ message: 'Update complete.' })
 	}
 })
 
 app.use('/', (req, res, next) => {
 	res.status(200).json({
-		message: 'Either go to /places or to /photos'
+		message: 'You can either go to /places or to /photos.'
 	})
 })
 
