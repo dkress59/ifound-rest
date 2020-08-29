@@ -60,7 +60,7 @@ app.use('/update', (req, res) => {
 
 app.use('/', (req, res, next) => {
 	res.status(200).json({
-		message: 'You can choose to go to /places or to /photos.'
+		message: 'You can choose to go either to /places or to /photos.'
 	})
 })
 
