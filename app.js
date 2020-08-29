@@ -4,6 +4,7 @@ const morgan = require('morgan')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 //const cors = require('cors')
+const shell = require('shelljs')
 
 //const cookieParser = require('cookie-parser')
 
@@ -15,10 +16,11 @@ const usersRoutes = require('./api/routes/users')
 mongoose.connect(
 	'mongodb+srv://atlastest:' +
 	process.env.IFO_MONGO_ATLAS_PW +
-	'@cluster0-guz2q.mongodb.net/iFound-one?retryWrites=true&w=majority', {
-	useNewUrlParser: true,
-	useUnifiedTopology: true
-}
+	'@cluster0-guz2q.mongodb.net/iFound-one?retryWrites=true&w=majority',
+	{
+		useNewUrlParser: true,
+		useUnifiedTopology: true
+	}
 )
 
 
@@ -47,6 +49,14 @@ app.use(bodyParser.json({ filter: '12mb' }))
 app.use('/places', placesRoutes)
 app.use('/photos', photosRoutes)
 app.use('/users', usersRoutes)
+
+app.use('/update', (req, res) => {
+	if (shell.exec('./update.sh').code !== 0) {
+		res.send({ error: 'Update failed.' })
+	} else {
+		res.send({ message: 'Update finished.' })
+	}
+})
 
 app.use('/', (req, res, next) => {
 	res.status(200).json({
