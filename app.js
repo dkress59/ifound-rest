@@ -52,12 +52,12 @@ app.use('/users', usersRoutes)
 
 app.use('/update', (req, res) => {
 	shell.cd('/var/www/ifound-rest')
-	shell.echo(shell.ls('/usr/bin /usr/local/bin'))
+	shell.echo(shell.ls('/usr/bin'))
 	if (shell.exec('/var/www/pull-ifound-rest.sh').code !== 0) {
 		res.status(500).send({ error: 'Update failed.' })
 	} else {
 		res.send({ message: 'Update complete.' })
-		//shell.exec('/usr/local/bin/pm2 restart ifound-rest')
+		shell.exec('/usr/local/bin/pm2 restart ifound-rest')
 	}
 })
 
