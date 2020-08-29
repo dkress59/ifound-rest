@@ -50,7 +50,7 @@ app.use('/places', placesRoutes)
 app.use('/photos', photosRoutes)
 app.use('/users', usersRoutes)
 
-app.use('/update', (req, res) => {
+app.use('/update', (req, res, next) => {
 	let version
 	switch (req.query.v) {
 		default:
