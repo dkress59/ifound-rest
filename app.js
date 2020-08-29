@@ -52,7 +52,7 @@ app.use('/users', usersRoutes)
 
 app.use('/update', (req, res) => {
 	if (shell.exec('./update.sh').code !== 0) {
-		res.send({ error: 'Update failed.' })
+		res.status(500).send({ error: 'Update failed.' })
 	} else {
 		res.send({ message: 'Update complete.' })
 	}
