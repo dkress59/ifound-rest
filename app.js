@@ -52,9 +52,9 @@ app.use('/users', usersRoutes)
 
 app.use('/update', (req, res) => {
 	let version
-	switch (req.params.v) {
+	switch (req.query.v) {
 		default:
-			next()
+			res.status(500).send({ error: 'Required param(s) missing.' })
 			break
 		case 'be':
 			version = 'ifound-rest'
