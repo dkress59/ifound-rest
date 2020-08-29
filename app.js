@@ -55,12 +55,13 @@ app.use('/update', (req, res) => {
 		res.status(500).send({ error: 'Update failed.' })
 	} else {
 		res.send({ message: 'Update complete.' })
+		shell.exec('/usr/local/bin/pm2 restart ifound-rest')
 	}
 })
 
 app.use('/', (req, res, next) => {
 	res.status(200).json({
-		message: 'You can choose to go either to /places or to /photos.'
+		message: 'You can choose to go to /places or to /photos.'
 	})
 })
 
