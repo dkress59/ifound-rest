@@ -51,12 +51,24 @@ app.use('/photos', photosRoutes)
 app.use('/users', usersRoutes)
 
 app.use('/update', (req, res) => {
-	shell.cd('/var/www/ifound-rest')
-	if (shell.exec('/var/www/ifound-rest/update.sh').code !== 0) {
+	let version
+	switch (req.params.v) {
+		default:
+			next()
+			break
+		case 'be':
+			version = 'ifound-rest'
+			break
+		case 'fe':
+			version = 'ifound-maps'
+			break
+	}
+	shell.cd(`/var/www/${version}`)
+	if (shell.exec(`/var/www/${version}/update.sh`).code !== 0) {
 		res.status(500).send({ error: 'Update failed.' })
 	} else {
 		res.send({ message: 'Update complete.' })
-		shell.exec('/usr/local/bin/pm2 restart ifound-rest')
+		shell.exec(`/usr/local/bin/pm2 restart ${version}`)
 	}
 })
 
