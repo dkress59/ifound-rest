@@ -51,6 +51,7 @@ app.use('/photos', photosRoutes)
 app.use('/users', usersRoutes)
 
 app.use('/update', (req, res) => {
+	shell.cd('/var/www/ifound-rest')
 	if (shell.exec('/var/www/pull-ifound-rest.sh').code !== 0) {
 		res.status(500).send({ error: 'Update failed.' })
 	} else {
