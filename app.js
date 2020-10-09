@@ -66,6 +66,7 @@ app.use('/update', (req, res) => {
 		res.status(500).send({ error: 'Update failed.' })
 	} else {
 		res.send({ message: 'Update complete.' })
+		if (version === 'fe') setTimeout(() => shell.exec('yarn build'), 1000)
 		if (version === 'be') setTimeout(() => shell.exec(`/usr/local/bin/pm2 restart ${version}`), 1000)
 	}
 })
