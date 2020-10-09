@@ -1,6 +1,8 @@
 node_modules
 media
-.env
+*.env*
 nodemon.json
 .DS_Store
 .code-workspace
+package-lock.json
+yarn.lock

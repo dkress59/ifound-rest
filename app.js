@@ -3,38 +3,37 @@ const app = express()
 const morgan = require('morgan')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
-//const cors = require('cors')
 const shell = require('shelljs')
-
 //const cookieParser = require('cookie-parser')
 
 const placesRoutes = require('./api/routes/places')
 const photosRoutes = require('./api/routes/photos')
 const usersRoutes = require('./api/routes/users')
 
-
 mongoose.connect(
-	'mongodb+srv://atlastest:' +
-	process.env.IFO_MONGO_ATLAS_PW +
-	'@cluster0-guz2q.mongodb.net/iFound-one?retryWrites=true&w=majority',
+	'mongodb+srv://atlastest:'
+	+ process.env.IFO_MONGO_ATLAS_PW
+	+ '@cluster0-guz2q.mongodb.net/iFound-one?retryWrites=true&w=majority',
 	{
 		useNewUrlParser: true,
-		useUnifiedTopology: true
+		useUnifiedTopology: true,
 	}
 )
-
 
 app.set('json spaces', 0)
 
 app.use((req, res, next) => {
-	res.header("Access-Control-Allow-Origin", "*")
-	res.header("Access-Control-Allow-Credentials", "true")
+	res.header('Access-Control-Allow-Origin', '*')
+	res.header('Access-Control-Allow-Credentials', 'true')
 	res.header(
-		"Access-Control-Allow-Headers",
-		"Origin, X-Requested-With, Content-Type, Accept, Authorization, xhrFields"
+		'Access-Control-Allow-Headers',
+		'Origin, X-Requested-With, Content-Type, Accept, Authorization, xhrFields'
 	)
 	if (req.method === 'OPTIONS') {
-		res.header('Access-Control-Allow-Methods', 'OPTIONS, PUT, POST, PATCH, DELETE, GET')
+		res.header(
+			'Access-Control-Allow-Methods',
+			'OPTIONS, PUT, POST, PATCH, DELETE, GET'
+		)
 		return res.status(200).json({})
 	}
 	next()
@@ -45,22 +44,21 @@ app.use(bodyParser.urlencoded({ extended: false, filter: '12mb' }))
 app.use(bodyParser.json({ filter: '12mb' }))
 //app.use(cookieParser())
 
-
 app.use('/places', placesRoutes)
 app.use('/photos', photosRoutes)
 app.use('/users', usersRoutes)
 
-app.use('/update', (req, res, next) => {
-	let version
+app.use('/update', (req, res) => {
+	let version = 'be'
 	switch (req.query.v) {
-		default:
-			res.status(500).send({ error: 'Required param(s) missing.' })
-			break
 		case 'be':
 			version = 'ifound-rest'
 			break
 		case 'fe':
 			version = 'ifound-maps'
+			break
+		default:
+			res.status(500).send({ error: 'Required param(s) missing.' })
 			break
 	}
 	shell.cd(`/var/www/${version}`)
@@ -68,13 +66,13 @@ app.use('/update', (req, res, next) => {
 		res.status(500).send({ error: 'Update failed.' })
 	} else {
 		res.send({ message: 'Update complete.' })
-		shell.exec(`/usr/local/bin/pm2 restart ${version}`)
+		if (version === 'be') setTimeout(() => shell.exec(`/usr/local/bin/pm2 restart ${version}`), 1000)
 	}
 })
 
-app.use('/', (req, res, next) => {
+app.use('/', (req, res) => {
 	res.status(200).json({
-		message: 'You can either go to /places or to /photos.'
+		message: 'You can either go to /places or to /photos.',
 	})
 })
 
@@ -83,14 +81,13 @@ app.use((req, res, next) => {
 	err.status = 404
 	next(err)
 })
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
 	res.status(err.status || 500)
 	res.json({
 		error: {
-			message: err.message || 'Bad request.'
-		}
+			message: err.message || 'Bad request.',
+		},
 	})
 })
-
 
 module.exports = app
