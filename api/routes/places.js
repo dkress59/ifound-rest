@@ -1,7 +1,14 @@
 // http://api.iFound.one/places
 
+const http = require('http')
+const fetch = require('cross-fetch')
+
 const express = require('express')
 const router = express.Router()
+const multer = require('multer')
+
+const exif = require('exif')
+const ExifImage = exif.ExifImage
 
 const Place = require('../models/place')
 const mongoose = require('mongoose')
@@ -9,12 +16,9 @@ const mongoose = require('mongoose')
 const Photo = require('../models/photo')
 const auth = require('../auth/check')
 
-const fetch = require('cross-fetch')
+const { logToConsole, logErrorToConsole } = require('../util')
 
-const exif = require('exif')
-const ExifImage = exif.ExifImage
 
-const multer = require('multer')
 const fileFilter = (req, file, cb) => {
 	if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/pjpeg') {
 		cb(null, true)
@@ -30,7 +34,6 @@ const upload = multer({
 	fileFilter: fileFilter
 })
 
-const http = require('http')
 const phpSendFile = (file, size, type, id, isAva, handle) => {
 
 	const handleResponse = (!handle && typeof isAva === 'function')
@@ -50,27 +53,26 @@ const phpSendFile = (file, size, type, id, isAva, handle) => {
 			'Content-Length': size
 		}
 	}
-	callback = function (response) {
+	const callback = response => {
 		var str = ''
-		response.on('data', function (chunk) {
-			str += chunk;
-		});
+		response.on('data', chunk => {
+			str += chunk
+		})
 
-		response.on('end', function () {
+		response.on('end', () => {
 			if (handleResponse)
 				handleResponse(JSON.parse(str))
-					&& console.log('phpSendFile response:', JSON.parse(str))
+					&& logToConsole('phpSendFile response:', JSON.parse(str))
 			else
-				console.log('phpSendFile response:', JSON.parse(str))
-		});
+				logToConsole('phpSendFile response:', JSON.parse(str))
+		})
 	}
 
 
-	var req = http.request(options, callback);
+	var req = http.request(options, callback)
 	req.write(file)
 	req.end()
 }
-
 
 
 // ALL PLACES
@@ -79,7 +81,7 @@ router.get('/', (req, res, next) => {
 		.select('name author avatar created photos lat lng range')
 		.exec()
 		.then(places => {
-			console.log(places)
+			logToConsole(places)
 			if (places.length) {
 				const response = {
 					message: 'GET request to /places is good.',
@@ -114,7 +116,7 @@ router.get('/', (req, res, next) => {
 			}
 		})
 		.catch(err => {
-			console.error(err)
+			logErrorToConsole(err)
 			res.status(500).json({
 				error: err
 			})
@@ -139,7 +141,7 @@ router.post('/', upload.fields([
 	})
 	plc.save()
 		.then(result => {
-			console.log(result)
+			logToConsole(result)
 			const incoming = (req.files.photoData)
 				? req.files.photoData[0]
 				: (req.files.cameraData) ? req.files.cameraData[0] : null
@@ -147,7 +149,7 @@ router.post('/', upload.fields([
 				new ExifImage({ image: incoming.buffer }, (error, exifData) => {
 					const ex = (exifData && exifData.exif) ? exifData.exif : null
 					const gp = (exifData && exifData.gps) ? exifData.gps : null
-					if (!exifData) console.error(error)
+					if (!exifData) logErrorToConsole(error)
 					fetch(process.env.REACT_APP_IFO_API + '/photos', {
 						method: 'post',
 						headers: {
@@ -163,18 +165,18 @@ router.post('/', upload.fields([
 							return response.json()
 						})
 						.then((obj) => {
-							console.log('File upload…')
+							logToConsole('File upload…')
 							const uploadSuccess = (phpRresponse) => {
-								console.log('php', phpRresponse)
+								logToConsole('php', phpRresponse)
 								if (phpRresponse.status === 500) {
-									console.log('…failed!')
-									console.error('Upload Error:', phpRresponse)
+									logToConsole('…failed!')
+									logErrorToConsole('Upload Error:', phpRresponse)
 									Photo.deleteOne({ _id: obj.newPhoto._id })
 									return res.status(500).json({ error: phpRresponse })
 									//return false
 								}
 								else {
-									console.log('…is good.')
+									logToConsole('…is good.')
 									return res.status(201).json({
 										message: 'POST request to /places is good.',
 										newPlace: {
@@ -197,7 +199,7 @@ router.post('/', upload.fields([
 								}
 							}
 							if (obj.newPhoto) phpSendFile(incoming.buffer, incoming.size, incoming.mimetype, obj.newPhoto._id, uploadSuccess)
-							else console.error(obj.error)// !! Throw an error here !!
+							else logErrorToConsole(obj.error)// !! Throw an error here !!
 						})
 				})
 			else
@@ -221,7 +223,7 @@ router.post('/', upload.fields([
 
 		})
 		.catch(err => {
-			console.error(err)
+			logErrorToConsole(err)
 			res.status(500).json({
 				error: err,
 			})
@@ -234,7 +236,7 @@ router.get('/:placeID', (req, res, next) => {
 	Place.findById(id)
 		.exec()
 		.then(plc => {
-			console.log(plc)
+			logToConsole(plc)
 			if (plc) {
 				res.status(200).json({
 					place: plc,
@@ -251,7 +253,7 @@ router.get('/:placeID', (req, res, next) => {
 			}
 		})
 		.catch(err => {
-			console.error(err)
+			logErrorToConsole(err)
 			res.status(500).json({
 				//message: `Place with _id ${id} not found.`,
 				error: err
@@ -265,11 +267,11 @@ router.patch('/:placeID', /* auth, */(req, res, next) => {
 	for (const ops of req.body) {
 		updateOps[ops.propName] = ops.value
 	}
-	console.log('updateOps', updateOpss)
+	logToConsole('updateOps', updateOpss)
 	const updateOps = {
 		lat:4, lng:4
 	} */
-	//console.log('GPS',req.body)
+	//logToConsole('GPS',req.body)
 	Place.updateOne({
 		_id: id
 	}, {
@@ -277,7 +279,7 @@ router.patch('/:placeID', /* auth, */(req, res, next) => {
 	})
 		.exec()
 		.then(result => {
-			console.log(result)
+			logToConsole(result)
 			res.status(200).json({
 				message: `PATCH request to /places/${id} is good.`,
 				updatedPlace: result,
@@ -288,7 +290,7 @@ router.patch('/:placeID', /* auth, */(req, res, next) => {
 			})
 		})
 		.catch(err => {
-			console.error(err)
+			logErrorToConsole(err)
 			res.status(500).json({
 				updateOps: updateOps,
 				error: err
@@ -297,7 +299,7 @@ router.patch('/:placeID', /* auth, */(req, res, next) => {
 })
 
 router.delete('/:placeID', auth, (req, res, next) => {
-	//console.log('DELETE TOKEN', req.headers.authorization)
+	//logToConsole('DELETE TOKEN', req.headers.authorization)
 	const id = req.params.placeID
 	Place.find({ _id: id })
 		.select('photos')
@@ -308,7 +310,7 @@ router.delete('/:placeID', auth, (req, res, next) => {
 					Photo.deleteOne({ _id: photo })
 						.exec()
 					fetch(process.env.REACT_APP_IFO_MEDIA + '/delete/' + photo)
-					//.then(php => { if (php.status !== '204') console.error('Error: ', php) })// ?? //
+					//.then(php => { if (php.status !== '204') logErrorToConsole('Error: ', php) })// ?? //
 				}
 		})
 	Place.deleteOne({
@@ -316,7 +318,7 @@ router.delete('/:placeID', auth, (req, res, next) => {
 	})
 		.exec()
 		.then(result => {
-			console.log(result)
+			logToConsole(result)
 			res.status(200).json({
 				message: `Place with _id ${id} successfully deleted.`,
 				_id: id,
@@ -333,7 +335,7 @@ router.delete('/:placeID', auth, (req, res, next) => {
 			})
 		})
 		.catch(err => {
-			console.error(err)
+			logErrorToConsole(err)
 			res.status(500).json({
 				error: err
 			})
@@ -346,7 +348,7 @@ router.get('/:placeID/photos', (req, res, next) => {
 		.select('url avatar')
 		.exec()
 		.then(photos => {
-			console.log(photos)
+			logToConsole(photos)
 			if (photos.length > 0) {
 				const response = {
 					message: `GET request to /places/${id}/photos is good.`,
@@ -371,7 +373,7 @@ router.get('/:placeID/photos', (req, res, next) => {
 			}
 		})
 		.catch(err => {
-			console.error(err)
+			logErrorToConsole(err)
 			res.status(500).json({
 				error: err
 			})

@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 const User = require('../models/user')
+const { logToConsole, logErrorToConsole } = require('../util')
 
 
 router.post('/signup', (req, res, next) => {
@@ -31,13 +32,13 @@ router.post('/signup', (req, res, next) => {
 				})
 				user.save()
 					.then(result => {
-						console.log(result)
+						logToConsole(result)
 						res.status(201).json({
 							message: 'POST request to /signup is good.'
 						})
 					})
 					.catch(err => {
-						console.error(err)
+						logErrorToConsole(err)
 						res.status(500).json({
 							error: err
 						})
@@ -45,7 +46,7 @@ router.post('/signup', (req, res, next) => {
 			})
 		})
 		.catch(err => {
-			console.error(err)
+			logErrorToConsole(err)
 			res.status(500).json({
 				error: err
 			})
@@ -86,7 +87,7 @@ router.post('/login', (req, res, next) => {
 			})
 		})
 		.catch(err => {
-			console.error(err)
+			logErrorToConsole(err)
 			res.status(500).json({
 				error: err
 			})

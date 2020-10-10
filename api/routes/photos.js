@@ -1,11 +1,21 @@
 // http://api.iFound.one/photos/
 // http://api.iFound.one/photos/avatars
 
+const http = require('http')
+//const fetch = require('cross-fetch')
+
 const express = require('express')
 const router = express.Router()
 
 const mongoose = require('mongoose')
 const multer = require('multer')
+
+const Photo = require('../models/photo')
+const Place = require('../models/place')
+const auth = require('../auth/check')
+const { logToConsole, logErrorToConsole } = require('../util')
+
+
 const fileFilter = (req, file, cb) => {
 	if (
 		file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'
@@ -23,8 +33,6 @@ const upload = multer({
 	fileFilter: fileFilter
 })
 
-const http = require('http')
-//const fetch = require('cross-fetch')
 const phpSendFile = (file, size, type, id, isAva) => {
 	const path = (isAva === true)
 		? '/upload/user/'
@@ -39,26 +47,22 @@ const phpSendFile = (file, size, type, id, isAva) => {
 			'Content-Length': size
 		}
 	}
-	callback = function (response) {
+	const callback = (response) => {
 		var str = ''
-		response.on('data', function (chunk) {
-			str += chunk;
-		});
+		response.on('data', (chunk) => {
+			str += chunk
+		})
 
-		response.on('end', function () {
-			console.log(str);
-		});
+		response.on('end', () => {
+			logToConsole(str)
+		})
 	}
 
 
-	var req = http.request(options, callback);
-	if (!req.write(file)) return false;
-	req.end();
+	var req = http.request(options, callback)
+	if (!req.write(file)) return false
+	req.end()
 }
-
-const Photo = require('../models/photo')
-const Place = require('../models/place')
-const auth = require('../auth/check')
 
 
 // ALL PHOTOS
@@ -70,7 +74,7 @@ router.get('/', (req, res, next) => {
 		//.populate('place', 'name author')
 		.exec()
 		.then(photos => {
-			console.log(photos)
+			logToConsole(photos)
 			if (photos.length > 0) {
 				const response = {
 					message: 'GET request to /photos is good.',
@@ -96,7 +100,7 @@ router.get('/', (req, res, next) => {
 			}
 		})
 		.catch(err => {
-			console.error(err)
+			logErrorToConsole(err)
 			res.status(500).json({
 				error: err
 			})
@@ -106,7 +110,7 @@ router.get('/', (req, res, next) => {
 router.post('/', (req, res, next) => {
 	Place.findById(req.body.place) // !! KEY !! //
 		.then(plc => {
-			console.log('req', req.body)
+			logToConsole('req', req.body)
 			if (plc) {
 				const uid = mongoose.Types.ObjectId()
 				const photo = new Photo({
@@ -127,7 +131,7 @@ router.post('/', (req, res, next) => {
 			}
 		})
 		.then(result => {
-			console.log(result)
+			logToConsole(result)
 			res.status(201).json({
 				message: 'POST request to /photos is good.',
 				newPhoto: {
@@ -143,7 +147,7 @@ router.post('/', (req, res, next) => {
 			})
 		})
 		.catch(err => {
-			console.error(err)
+			logErrorToConsole(err)
 			res.status(500).json({
 				error: err
 			})
@@ -158,7 +162,7 @@ router.get('/avatars', (req, res, next) => {
 		.select('url place')
 		.exec()
 		.then(avatars => {
-			console.log(avatars)
+			logToConsole(avatars)
 			if (avatars.length > 0) {
 				const response = {
 					message: 'GET request to /photos/avatars is good.',
@@ -183,7 +187,7 @@ router.get('/avatars', (req, res, next) => {
 			}
 		})
 		.catch(err => {
-			console.error(err)
+			logErrorToConsole(err)
 			res.status(500).json({
 				error: err
 			})
@@ -191,7 +195,7 @@ router.get('/avatars', (req, res, next) => {
 })
 
 router.post('/avatars', upload.single('photoData'), (req, res, next) => {
-	console.log('MULTER FILE:', req.file)
+	logToConsole('MULTER FILE:', req.file)
 	const uid = mongoose.Types.ObjectId()
 	const avatar = new Photo({
 		_id: uid,
@@ -199,10 +203,10 @@ router.post('/avatars', upload.single('photoData'), (req, res, next) => {
 		url: process.env.REACT_APP_IFO_MEDIA + `/view/users/${uid}`,
 		place: req.body.place
 	})
-	phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, avatar._id, true);
+	phpSendFile(req.file.buffer, req.file.size, req.file.mimetype, avatar._id, true)
 	avatar.save()
 		.then(result => {
-			console.log(result)
+			logToConsole(result)
 			res.status(201).json({
 				message: 'POST request to /photos/avatars is good.',
 				newAvatar: {
@@ -218,7 +222,7 @@ router.post('/avatars', upload.single('photoData'), (req, res, next) => {
 			})
 		})
 		.catch(err => {
-			console.error(err)
+			logErrorToConsole(err)
 			res.status(500).json({
 				error: err
 			})
@@ -234,7 +238,7 @@ router.get('/:photoID', (req, res, next) => {
 		.populate('place')
 		.exec()
 		.then(pic => {
-			console.log(pic)
+			logToConsole(pic)
 			if (pic) {
 				res.status(200).json({
 					photo: pic,
@@ -251,7 +255,7 @@ router.get('/:photoID', (req, res, next) => {
 			}
 		})
 		.catch(err => {
-			console.error(err)
+			logErrorToConsole(err)
 			res.status(500).json({
 				//message: `Photo with _id ${id} not found.`,
 				error: err
@@ -266,7 +270,7 @@ router.delete('/:photoID', auth, (req, res, next) => {
 	})
 		.exec()
 		.then(result => {
-			console.log(result)
+			logToConsole(result)
 			res.status(200).json({
 				message: `Photo with _id ${id} successfully deleted.`,
 				_id: id,
@@ -282,7 +286,7 @@ router.delete('/:photoID', auth, (req, res, next) => {
 			})
 		})
 		.catch(err => {
-			console.error(err)
+			logErrorToConsole(err)
 			res.status(500).json({
 				error: err
 			})
@@ -296,7 +300,7 @@ router.get('/avatars/:avatarID', (req, res, next) => {
 		.populate('place')
 		.exec()
 		.then(ava => {
-			console.log(ava)
+			logToConsole(ava)
 			if (ava) {
 				res.status(200).json({
 					avatar: ava,
@@ -313,7 +317,7 @@ router.get('/avatars/:avatarID', (req, res, next) => {
 			}
 		})
 		.catch(err => {
-			console.error(err)
+			logErrorToConsole(err)
 			res.status(500).json({
 				//message: `Place with _id ${id} not found.`,
 				error: err
@@ -329,7 +333,7 @@ router.delete('/avatars/:avatarID', auth, (req, res, next) => {
 	})
 		.exec()
 		.then(result => {
-			console.log(result)
+			logToConsole(result)
 			res.status(200).json({
 				message: `Avatar with _id ${id} successfully deleted.`,
 				_id: id,
@@ -345,7 +349,7 @@ router.delete('/avatars/:avatarID', auth, (req, res, next) => {
 			})
 		})
 		.catch(err => {
-			console.error(err)
+			logErrorToConsole(err)
 			res.status(500).json({
 				error: err
 			})

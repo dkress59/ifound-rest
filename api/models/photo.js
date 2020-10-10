@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
 
 const exifSchema = new Schema({
 	InteropIndex: Number,
@@ -476,6 +476,6 @@ const photoSchema = new Schema({
 	//exif: Exif.schema,
 	//exif: exifSchema,
 	gps: gpsSchema
-});
+})
 
-module.exports = mongoose.model('Photo', photoSchema);
+module.exports = mongoose.model('Photo', photoSchema)

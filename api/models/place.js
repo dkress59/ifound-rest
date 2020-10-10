@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
 
 const placeSchema = new Schema({
 	_id: mongoose.Schema.Types.ObjectId,
@@ -12,7 +12,7 @@ const placeSchema = new Schema({
 	photos: Array,
 	created: { type: mongoose.Schema.Types.Date, default: Date.now },
 	ip: String
-});
+})
 placeSchema.index({name: 'text', author: 'text', _id: 'text'})
 
-module.exports = mongoose.model('Place', placeSchema);
+module.exports = mongoose.model('Place', placeSchema)

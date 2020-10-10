@@ -39,7 +39,8 @@ app.use((req, res, next) => {
 	next()
 })
 //app.use(cors())
-app.use(morgan('dev'))
+if (process.env.NODE_ENV === 'development')
+	app.use(morgan('dev'))
 app.use(bodyParser.urlencoded({ extended: false, filter: '12mb' }))
 app.use(bodyParser.json({ filter: '12mb' }))
 //app.use(cookieParser())
@@ -67,7 +68,7 @@ app.use('/update', (req, res) => {
 	} else {
 		res.send({ message: 'Update complete.' })
 		if (version === 'fe') setTimeout(() => shell.exec('yarn build'), 1000)
-		if (version === 'be') setTimeout(() => shell.exec(`reload ${version}`), 1000)
+		if (version === 'be') setTimeout(() => shell.exec(`restart ${version} --env production`), 1000)
 	}
 })
 
