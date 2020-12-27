@@ -2,8 +2,8 @@ const fs = require('fs')
 const app = require('./app')
 const http = require('http')
 const https = require('https')
-const privateKey = fs.readFileSync('./local-key.pem', 'utf8')
-const certificate = fs.readFileSync('./local-cert.pem', 'utf8')
+const privateKey = fs.readFileSync(process.env.SSL_KEY_FILE, 'utf8')
+const certificate = fs.readFileSync(process.env.SSL_CRT_FILE, 'utf8')
 const credentials = {key: privateKey, cert: certificate}
 
 const port = process.env.IFO_API_PORT

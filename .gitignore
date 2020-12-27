@@ -5,5 +5,4 @@ nodemon.json
 .DS_Store
 .code-workspace
 package-lock.json
-yarn.lock
 *.pem
