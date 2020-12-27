@@ -9,10 +9,11 @@ const env = {
 	IFO_REST_URL: process.env.IFO_REST_URL,
 	IFO_REACT_APP_URL: process.env.IFO_REACT_APP_URL,
 
-},
+}
 
 module.exports = {
-	apps: [{
+	apps: [
+{
 		name: 'ifound-rest',
 		script: 'yarn',
 		args: 'start',
@@ -26,5 +27,6 @@ module.exports = {
 			SSL_CRT_FILE: '/etc/letsencrypt/live/api.ifound.one/cert.pem',
 			SSL_KEY_FILE: '/etc/letsencrypt/live/api.ifound.one/privkey.pem',
 		},
-	}]
+	}
+]
 }
