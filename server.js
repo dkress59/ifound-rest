@@ -1,8 +1,17 @@
-const http = require('http');
+const fs = require('fs')
 const app = require('./app')
+const http = require('http')
+const https = require('https')
+const privateKey = fs.readFileSync('./local-key.pem', 'utf8')
+const certificate = fs.readFileSync('./local-cert.pem', 'utf8')
+const credentials = {key: privateKey, cert: certificate}
 
-const port = process.env.IFO_API_PORT || 80;
+const port = process.env.IFO_API_PORT
+	? parseInt(process.env.IFO_API_PORT, 10)
+	: 80
 
-const server = http.createServer(app);
+const server = http.createServer(app)
+const httpsServer = https.createServer(credentials, app)
 
-server.listen(port, () => console.log(`Server is listening on port ${port}...`));
+server.listen(port, () => console.log(`Server is listening on port ${port}...`))
+httpsServer.listen(port + 1, () => console.log(`HTTPS server is listening on port ${port + 1}...`))

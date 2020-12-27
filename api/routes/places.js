@@ -14,7 +14,7 @@ const Place = require('../models/place')
 const mongoose = require('mongoose')
 
 const Photo = require('../models/photo')
-const auth = require('../auth/check')
+const auth = require('../auth')
 
 const { logToConsole, logErrorToConsole } = require('../util')
 

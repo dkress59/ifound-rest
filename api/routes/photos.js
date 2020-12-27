@@ -12,7 +12,7 @@ const multer = require('multer')
 
 const Photo = require('../models/photo')
 const Place = require('../models/place')
-const auth = require('../auth/check')
+const auth = require('../auth')
 const { logToConsole, logErrorToConsole } = require('../util')
 
 
